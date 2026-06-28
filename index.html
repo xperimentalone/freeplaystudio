@@ -84,7 +84,8 @@
             </label>
             <input type="file" id="imageInput" accept="image/*" class="hidden"/>
 
-            <div id="zoomControl" class="mx-auto mb-2 hidden w-full max-w-[320px] items-center justify-end">
+            <div id="zoomControl" class="mx-auto mb-2 hidden w-full max-w-[320px] items-center justify-end gap-2">
+                <span class="text-sm font-semibold text-slate-700">Zoom</span>
                 <div class="rounded-md bg-slate-200/70 px-2 py-1">
                     <input id="zoomSlider" type="range" min="0.1" max="2" step="0.1" value="1" class="h-2 w-24 cursor-pointer accent-[#9BFFE1]" />
                 </div>
@@ -377,25 +378,39 @@
         synth.chain(bitcrusher, reverb, Tone.Destination);
 
         let audioUnlocked = false;
+        let audioUnlockAttempted = false;
         async function ensureAudioUnlocked() {
             try {
                 const context = Tone.getContext();
+                const rawContext = context && context.rawContext;
+
+                if (rawContext && rawContext.state === 'suspended') {
+                    await rawContext.resume();
+                }
                 if (context.state === 'suspended') {
                     await Tone.start();
                     await context.resume();
                 }
+
                 if (context.state === 'running') {
                     audioUnlocked = true;
+                    audioUnlockAttempted = true;
+                    return true;
                 }
-                return audioUnlocked;
+
+                if (!audioUnlockAttempted && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+                    statusText.innerText = 'Tap again to enable audio. If Silent Mode is on, turn it off to hear playback.';
+                }
+                return false;
             } catch (error) {
                 console.warn('Audio unlock failed:', error);
                 return false;
             }
         }
 
-        window.addEventListener('pointerdown', () => { ensureAudioUnlocked(); }, { once: true, passive: true });
-        window.addEventListener('touchstart', () => { ensureAudioUnlocked(); }, { once: true, passive: true });
+        window.addEventListener('pointerdown', () => { ensureAudioUnlocked(); }, { passive: true });
+        window.addEventListener('touchstart', () => { ensureAudioUnlocked(); }, { passive: true });
+        window.addEventListener('click', () => { ensureAudioUnlocked(); }, { passive: true });
 
         const scales = {
             pentatonic: ["C3", "D3", "E3", "G3", "A3", "C4", "D4", "E4", "G4", "A4", "C5", "D5", "E5", "G5"],
