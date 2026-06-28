@@ -38,6 +38,19 @@
         .tone-field:active {
             background: #2dd4bf !important; color: #0f172a !important; box-shadow: 0 0 15px #2dd4bf; transform: translate(-50%, -50%) scale(0.92);
         }
+        .sequencer-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 0.375rem;
+        }
+        .sequencer-step {
+            min-height: 2.6rem;
+        }
+        @media (min-width: 768px) {
+            .sequencer-grid {
+                grid-template-columns: repeat(8, minmax(0, 1fr));
+            }
+        }
         body {
             background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;
             transition: background-image 0.5s ease-in-out;
@@ -240,72 +253,38 @@
                             </button>
                         </div>
                         
-                        <div class="flex flex-col gap-6 bg-slate-300 p-4 rounded-xl border border-white/5">
-                            <div>
-                                <span class="text-[12px] font-bold uppercase tracking-wider text-slate-500 block mb-1.5">Line 1 (Beats 1 - 8)</span>
-                                <table class="w-full text-center border-collapse">
-                                    <thead>
-                                        <tr class="border-b border-white/10 text-[12px] font-mono text-slate-700">
-                                            <th class="p-1 text-left w-16">Note</th>
-                                            <script>for(let i=1; i<=8; i++) { document.write(`<th class="p-1">${i}</th>`); }</script>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="border-b border-white/5">
-                                            <td class="p-1.5 text-left text-xs font-bold text-teal-600 font-mono">L-Hand</td>
-                                            <script>
-                                                for(let i=0; i<8; i++) {
-                                                    let val = (i % 2 === 0) ? "D3" : "ta";
-                                                    document.write(`<td class="p-1"><div id="cell-left-${i}" data-hand="left" data-step="${i}" data-notes="${val}" onclick="selectCell(this)" class="w-9 h-10 mx-auto flex items-center justify-center rounded text-[10px] font-mono cursor-pointer border border-slate-300 bg-slate-400 hover:bg-slate-800 text-teal-300 transition-all select-none overflow-hidden text-ellipsis">${val}</div></td>`);
-                                                }
-                                            </script>
-                                        </tr>
-                                        <tr>
-                                            <td class="p-1.5 text-left text-xs font-bold text-orange-600 font-mono">R-Hand</td>
-                                            <script>
-                                                for(let i=0; i<8; i++) {
-                                                    let val = (i === 2) ? "A4+C5" : ((i === 6) ? "D5+F5" : "-");
-                                                    let color = (val !== "-") ? "text-orange-300" : "text-slate-600";
-                                                    document.write(`<td class="p-1"><div id="cell-right-${i}" data-hand="right" data-step="${i}" data-notes="${val}" onclick="selectCell(this)" class="w-9 h-10 mx-auto flex items-center justify-center rounded text-[10px] font-mono cursor-pointer border border-slate-300 bg-slate-400 hover:bg-slate-800 ${color} transition-all select-none overflow-hidden text-ellipsis">${val}</div></td>`);
-                                                }
-                                            </script>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div class="flex flex-col gap-4 bg-slate-300 p-4 rounded-xl border border-white/5">
+                            <script>
+                                const mobileRows = [
+                                    { label: 'L-hand notes (1–4)', range: [0, 3], hand: 'left', value: (i) => (i % 2 === 0) ? 'D3' : 'ta', hint: '1–4' },
+                                    { label: 'R-hand notes (1–4)', range: [0, 3], hand: 'right', value: (i) => (i === 2 || i === 10) ? 'A4+C5' : ((i === 6 || i === 14) ? 'D5+F5' : '-'), hint: '1–4' },
+                                    { label: 'L-hand notes (5–8)', range: [4, 7], hand: 'left', value: (i) => (i % 2 === 0) ? 'D3' : 'ta', hint: '5–8' },
+                                    { label: 'R-hand notes (5–8)', range: [4, 7], hand: 'right', value: (i) => (i === 2 || i === 10) ? 'A4+C5' : ((i === 6 || i === 14) ? 'D5+F5' : '-'), hint: '5–8' },
+                                    { label: 'L-hand notes (9–12)', range: [8, 11], hand: 'left', value: (i) => (i % 2 === 0) ? 'D3' : 'ta', hint: '9–12' },
+                                    { label: 'R-hand notes (9–12)', range: [8, 11], hand: 'right', value: (i) => (i === 2 || i === 10) ? 'A4+C5' : ((i === 6 || i === 14) ? 'D5+F5' : '-'), hint: '9–12' },
+                                    { label: 'L-hand notes (13–16)', range: [12, 15], hand: 'left', value: (i) => (i % 2 === 0) ? 'D3' : 'ta', hint: '13–16' },
+                                    { label: 'R-hand notes (13–16)', range: [12, 15], hand: 'right', value: (i) => (i === 2 || i === 10) ? 'A4+C5' : ((i === 6 || i === 14) ? 'D5+F5' : '-'), hint: '13–16' }
+                                ];
 
-                            <div>
-                                <span class="text-[12px] font-bold uppercase tracking-wider text-slate-500 block mb-1.5">Line 2 (Beats 9 - 16)</span>
-                                <table class="w-full text-center border-collapse">
-                                    <thead>
-                                        <tr class="border-b border-white/10 text-[12px] font-mono text-slate-700">
-                                            <th class="p-1 text-left w-16">Note</th>
-                                            <script>for(let i=9; i<=16; i++) { document.write(`<th class="p-1">${i}</th>`); }</script>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="border-b border-white/5">
-                                            <td class="p-1.5 text-left text-xs font-bold text-teal-600 font-mono">L-Hand</td>
-                                            <script>
-                                                for(let i=8; i<16; i++) {
-                                                    let val = (i % 2 === 0) ? "D3" : "ta";
-                                                    document.write(`<td class="p-1"><div id="cell-left-${i}" data-hand="left" data-step="${i}" data-notes="${val}" onclick="selectCell(this)" class="w-9 h-10 mx-auto flex items-center justify-center rounded text-[10px] font-mono cursor-pointer border border-slate-300 bg-slate-400 hover:bg-slate-800 text-teal-300 transition-all select-none overflow-hidden text-ellipsis">${val}</div></td>`);
-                                                }
-                                            </script>
-                                        </tr>
-                                        <tr>
-                                            <td class="p-1.5 text-left text-xs font-bold text-orange-600 font-mono">R-Hand</td>
-                                            <script>
-                                                for(let i=8; i<16; i++) {
-                                                    let val = (i === 10) ? "A4+C5" : ((i === 14) ? "D5+F5" : "-");
-                                                    let color = (val !== "-") ? "text-orange-300" : "text-slate-600";
-                                                    document.write(`<td class="p-1"><div id="cell-right-${i}" data-hand="right" data-step="${i}" data-notes="${val}" onclick="selectCell(this)" class="w-9 h-10 mx-auto flex items-center justify-center rounded text-[10px] font-mono cursor-pointer border border-slate-300 bg-slate-400 hover:bg-slate-800 ${color} transition-all select-none overflow-hidden text-ellipsis">${val}</div></td>`);
-                                                }
-                                            </script>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                                const desktopRows = [
+                                    { label: 'L-Hand Notes (1-8)', range: [0, 7], hand: 'left', value: (i) => (i % 2 === 0) ? 'D3' : 'ta' },
+                                    { label: 'R-Hand Notes (1-8)', range: [0, 7], hand: 'right', value: (i) => (i === 2 || i === 10) ? 'A4+C5' : ((i === 6 || i === 14) ? 'D5+F5' : '-') },
+                                    { label: 'L-Hand Notes (9-16)', range: [8, 15], hand: 'left', value: (i) => (i % 2 === 0) ? 'D3' : 'ta' },
+                                    { label: 'R-Hand Notes (9-16)', range: [8, 15], hand: 'right', value: (i) => (i === 2 || i === 10) ? 'A4+C5' : ((i === 6 || i === 14) ? 'D5+F5' : '-') }
+                                ];
+
+                                const rows = window.innerWidth < 768 ? mobileRows : desktopRows;
+                                rows.forEach((row) => {
+                                    const cells = [];
+                                    for (let i = row.range[0]; i <= row.range[1]; i++) {
+                                        const val = row.value(i);
+                                        const color = row.hand === 'right' && val !== '-' ? 'text-orange-300' : (row.hand === 'right' ? 'text-slate-600' : 'text-teal-300');
+                                        cells.push(`<div id="cell-${row.hand}-${i}" data-hand="${row.hand}" data-step="${i}" data-notes="${val}" onclick="selectCell(this)" class="sequencer-step w-full mx-auto flex items-center justify-center rounded text-[10px] font-mono cursor-pointer border border-slate-300 bg-slate-400 hover:bg-slate-800 ${color} transition-all select-none overflow-hidden text-ellipsis">${val}</div>`);
+                                    }
+                                    const hintHtml = row.hint ? `<span class="ml-2 text-[10px] font-semibold text-slate-400">${row.hint}</span>` : '';
+                                    document.write(`<div class="mb-2"><div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1 flex items-center">${row.label}${hintHtml}</div><div class="sequencer-grid">${cells.join('')}</div></div>`);
+                                });
+                            </script>
                         </div>
                     </div>
 
@@ -396,6 +375,27 @@
         };
         
         synth.chain(bitcrusher, reverb, Tone.Destination);
+
+        let audioUnlocked = false;
+        async function ensureAudioUnlocked() {
+            try {
+                const context = Tone.getContext();
+                if (context.state === 'suspended') {
+                    await Tone.start();
+                    await context.resume();
+                }
+                if (context.state === 'running') {
+                    audioUnlocked = true;
+                }
+                return audioUnlocked;
+            } catch (error) {
+                console.warn('Audio unlock failed:', error);
+                return false;
+            }
+        }
+
+        window.addEventListener('pointerdown', () => { ensureAudioUnlocked(); }, { once: true, passive: true });
+        window.addEventListener('touchstart', () => { ensureAudioUnlocked(); }, { once: true, passive: true });
 
         const scales = {
             pentatonic: ["C3", "D3", "E3", "G3", "A3", "C4", "D4", "E4", "G4", "A4", "C5", "D5", "E5", "G5"],
@@ -569,7 +569,7 @@
         }
 
         photoPlayBtn.addEventListener('click', async () => {
-            await Tone.start();
+            await ensureAudioUnlocked();
             if (playingSequence) {
                 Tone.Transport.stop(); playingSequence.dispose(); playingSequence = null;
                 photoPlayBtn.innerHTML = "<span>🎵</span> Play Image Music";
@@ -632,7 +632,7 @@
         audioContextBtn.addEventListener('click', async () => {
             if (engineInitialized) return;
             audioContextBtn.disabled = true; audioContextBtn.innerText = "Connecting..."; statusMsg.classList.remove('hidden');
-            await Tone.start();
+            await ensureAudioUnlocked();
 
             let loaders = [];
             for (let name in soundTracks) {
@@ -656,7 +656,8 @@
         });
 
         document.querySelectorAll('.sound-toggle').forEach(checkbox => {
-            checkbox.addEventListener('change', (e) => {
+            checkbox.addEventListener('change', async (e) => {
+                await ensureAudioUnlocked();
                 const soundName = e.target.getAttribute('data-sound'); const track = soundTracks[soundName];
                 if (!track || !track.player) return;
                 if (e.target.checked) { track.player.start(); } else { track.player.stop(); }
@@ -706,22 +707,24 @@
         }
 
         function handlePadHit(note) {
-            processAndPlayToken(note, Tone.now());
-            if (activeSelectedCell) {
-                let currentNotes = activeSelectedCell.getAttribute('data-notes');
-                let targetHand = activeSelectedCell.getAttribute('data-hand');
-                let updatedValue = "";
+            ensureAudioUnlocked().then(() => {
+                processAndPlayToken(note, Tone.now());
+                if (activeSelectedCell) {
+                    let currentNotes = activeSelectedCell.getAttribute('data-notes');
+                    let targetHand = activeSelectedCell.getAttribute('data-hand');
+                    let updatedValue = "";
 
-                if (currentNotes === "-" || currentNotes === "---" || currentNotes === "") { updatedValue = note; } 
-                else {
-                    let existingArray = currentNotes.split('+');
-                    updatedValue = !existingArray.includes(note) ? currentNotes + "+" + note : currentNotes;
+                    if (currentNotes === "-" || currentNotes === "---" || currentNotes === "") { updatedValue = note; }
+                    else {
+                        let existingArray = currentNotes.split('+');
+                        updatedValue = !existingArray.includes(note) ? currentNotes + "+" + note : currentNotes;
+                    }
+
+                    activeSelectedCell.setAttribute('data-notes', updatedValue); activeSelectedCell.innerText = updatedValue;
+                    activeSelectedCell.classList.remove('text-slate-600');
+                    activeSelectedCell.classList.add(targetHand === 'left' ? 'text-teal-300' : 'text-orange-300');
                 }
-
-                activeSelectedCell.setAttribute('data-notes', updatedValue); activeSelectedCell.innerText = updatedValue;
-                activeSelectedCell.classList.remove('text-slate-600');
-                activeSelectedCell.classList.add(targetHand === 'left' ? 'text-teal-300' : 'text-orange-300');
-            }
+            });
         }
 
         function processAndPlayToken(token, time) {
@@ -751,7 +754,7 @@
         bpmSelect.addEventListener('change', () => { Tone.Transport.bpm.value = Number(bpmSelect.value); });
 
         document.getElementById('playHandpanBtn').addEventListener('click', async () => {
-            await Tone.start();
+            await ensureAudioUnlocked();
             const button = document.getElementById('playHandpanBtn');
 
             if (handpanSequence) {
