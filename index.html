@@ -59,19 +59,22 @@
 </head>
 <body class="text-slate-100 min-h-screen flex flex-col items-center justify-start p-6">
 
-    <div class="w-full max-w-xl bg-slate-900/80 backdrop-blur-md px-4 py-3 rounded-2xl shadow-2xl border border-slate-700/50 mb-8 flex justify-between items-center gap-2 z-50">
-        <span class="text-xs font-black tracking-widest text-[#5DDFB8] uppercase pl-2 hidden sm:inline">Freeplay Studio</span>
-        <div class="flex gap-1 sm:gap-2 w-full sm:w-auto justify-center">
-            <button onclick="switchChannel('photo-symphony')" id="btn-photo-symphony" class="px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer bg-[#7FE7CC] text-white shadow">
-                📷 Photo-Symphony
-            </button>
-            <button onclick="switchChannel('eco-orchestra')" id="btn-eco-orchestra" class="px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer bg-slate-800 text-slate-400 hover:text-white">
-                🌧️ Eco-Orchestra
-            </button>
-            <button onclick="switchChannel('secret-pan')" id="btn-secret-pan" class="px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer bg-slate-800 text-slate-400 hover:text-white">
-                ⛰️ Secret Pan Garden
-            </button>
+    <div class="w-full max-w-xl bg-slate-900/80 backdrop-blur-md px-4 py-3 rounded-2xl shadow-2xl border border-slate-700/50 mb-8 flex flex-col gap-2 z-50">
+        <div class="flex justify-between items-center gap-2">
+            <span class="text-xs font-black tracking-widest text-[#5DDFB8] uppercase pl-2 hidden sm:inline">Freeplay Studio</span>
+            <div class="flex gap-1 sm:gap-2 w-full sm:w-auto justify-center">
+                <button onclick="switchChannel('photo-symphony')" id="btn-photo-symphony" class="px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer bg-[#7FE7CC] text-white shadow">
+                    📷 Photo-Symphony
+                </button>
+                <button onclick="switchChannel('eco-orchestra')" id="btn-eco-orchestra" class="px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer bg-slate-800 text-slate-400 hover:text-white">
+                    🌧️ Eco-Orchestra
+                </button>
+                <button onclick="switchChannel('secret-pan')" id="btn-secret-pan" class="px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer bg-slate-800 text-slate-400 hover:text-white">
+                    ⛰️ Secret Pan Garden
+                </button>
+            </div>
         </div>
+        <p class="text-center text-[14px] text-slate-400">Remember to ummute your phone to enjoy the music</p>
     </div>
 
     <div id="view-photo-symphony" class="channel-view w-full flex flex-col items-center justify-center">
