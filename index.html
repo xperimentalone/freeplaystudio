@@ -74,7 +74,7 @@
                 </button>
             </div>
         </div>
-        <p class="text-center text-[14px] text-slate-400">Remember to ummute your phone to enjoy the music</p>
+        <p class="text-center text-[14px] text-slate-400">Remember to ummute your device to enjoy the music</p>
     </div>
 
     <div id="view-photo-symphony" class="channel-view w-full flex flex-col items-center justify-center">
@@ -119,10 +119,25 @@
                 <p class="text-sm text-slate-700 mb-2" id="ecoStatusText">Craft your personalized soundscape</p>
             </div>
 
-            <div class="flex justify-center mb-8">
+            <div class="relative flex items-center justify-center mb-6">
                 <button id="audioContextBtn" class="px-6 py-3 bg-[#7FE7CC] hover:bg-[#9BFFE1] font-bold rounded-full shadow-lg transition-all transform hover:scale-105 flex items-center gap-2 text-white text-sm">
                     <span>🎵</span> Start Audio Engine
                 </button>
+
+                <div id="timerControlWrapper" class="absolute right-0 hidden flex flex-col items-end gap-1 w-[120px] sm:w-[140px]">
+                    <label for="autoStopSelect" class="text-sm font-semibold text-slate-700">Auto-stop timer</label>
+                    <select id="autoStopSelect" disabled class="w-full rounded-full border border-slate-300 bg-white/90 px-3 py-2 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#5DDFB8]">
+                        <option value="">No timer</option>
+                        <option value="10">10 minutes</option>
+                        <option value="15">15 minutes</option>
+                        <option value="20">20 minutes</option>
+                        <option value="25">25 minutes</option>
+                        <option value="30">30 minutes</option>
+                        <option value="45">45 minutes</option>
+                        <option value="60">60 minutes</option>
+                    </select>
+                    <p id="timerStatus" class="text-xs text-slate-600">Choose a countdown after the engine starts.</p>
+                </div>
             </div>
 
             <div id="mixerContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4 pointer-events-none opacity-50 transition-opacity duration-300">
@@ -199,8 +214,8 @@
 
     <div id="view-secret-pan" class="channel-view w-full hidden flex flex-col items-center justify-center">
         <div class="max-w-6xl w-full bg-slate-200/70 p-6 sm:p-8 rounded-2xl shadow-2xl border border-slate-300 text-center backdrop-blur-sm">
-            <h1 class="text-3xl font-bold mb-1 text-[#5DDFB8]">Secret Pan Garden : Composition Room</h1>
-            <p class="text-xs text-slate-700 mb-6">Create your own unique melodies with this handpan!</p>
+            <h1 class="text-3xl font-bold mb-1 text-[#5DDFB8]">Secret Pan Garden</h1>
+            <p class="text-xs text-slate-700 mb-6">Create your own unique melodies with this handpan!<br> (Suggested to use desktop computer for optimal performance.)</p>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 text-left items-center">
                 <div class="lg:col-span-5 flex flex-col items-center justify-center p-4 bg-white/5 rounded-xl border border-white/10 text-center self-stretch">
@@ -250,51 +265,22 @@
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
                             <div>
                                 <h3 class="text-teal-400 font-bold text-sm">🎵 16-Step Studio Sequencer Grid</h3>
-                                <p class="text-[11px] text-slate-400">Click a box to highlight it, then hit the Handpan to record notes.</p>
+                                <p class="text-[11px] text-slate-400">Click a box to highlight it, then hit the Handpan to record notes. Double-click a box to clear it.</p>
                             </div>
                             <button onclick="clearEntireGrid()" class="text-[10px] px-2 py-1 bg-rose-500/20 hover:bg-rose-500/40 text-slate-700 rounded border border-rose-500/30 cursor-pointer transition-colors">
-                                🧹 Clear Grid
+                                🧹 Clear All Grids
                             </button>
                         </div>
                         
                         <div class="flex flex-col gap-4 bg-slate-300 p-4 rounded-xl border border-white/5">
-                            <script>
-                                const mobileRows = [
-                                    { label: 'L-hand notes (1–4)', range: [0, 3], hand: 'left', value: (i) => (i % 2 === 0) ? 'D3' : 'ta', hint: '1–4' },
-                                    { label: 'R-hand notes (1–4)', range: [0, 3], hand: 'right', value: (i) => (i === 2 || i === 10) ? 'A4+C5' : ((i === 6 || i === 14) ? 'D5+F5' : '-'), hint: '1–4' },
-                                    { label: 'L-hand notes (5–8)', range: [4, 7], hand: 'left', value: (i) => (i % 2 === 0) ? 'D3' : 'ta', hint: '5–8' },
-                                    { label: 'R-hand notes (5–8)', range: [4, 7], hand: 'right', value: (i) => (i === 2 || i === 10) ? 'A4+C5' : ((i === 6 || i === 14) ? 'D5+F5' : '-'), hint: '5–8' },
-                                    { label: 'L-hand notes (9–12)', range: [8, 11], hand: 'left', value: (i) => (i % 2 === 0) ? 'D3' : 'ta', hint: '9–12' },
-                                    { label: 'R-hand notes (9–12)', range: [8, 11], hand: 'right', value: (i) => (i === 2 || i === 10) ? 'A4+C5' : ((i === 6 || i === 14) ? 'D5+F5' : '-'), hint: '9–12' },
-                                    { label: 'L-hand notes (13–16)', range: [12, 15], hand: 'left', value: (i) => (i % 2 === 0) ? 'D3' : 'ta', hint: '13–16' },
-                                    { label: 'R-hand notes (13–16)', range: [12, 15], hand: 'right', value: (i) => (i === 2 || i === 10) ? 'A4+C5' : ((i === 6 || i === 14) ? 'D5+F5' : '-'), hint: '13–16' }
-                                ];
-
-                                const desktopRows = [
-                                    { label: 'L-Hand Notes (1-8)', range: [0, 7], hand: 'left', value: (i) => (i % 2 === 0) ? 'D3' : 'ta' },
-                                    { label: 'R-Hand Notes (1-8)', range: [0, 7], hand: 'right', value: (i) => (i === 2 || i === 10) ? 'A4+C5' : ((i === 6 || i === 14) ? 'D5+F5' : '-') },
-                                    { label: 'L-Hand Notes (9-16)', range: [8, 15], hand: 'left', value: (i) => (i % 2 === 0) ? 'D3' : 'ta' },
-                                    { label: 'R-Hand Notes (9-16)', range: [8, 15], hand: 'right', value: (i) => (i === 2 || i === 10) ? 'A4+C5' : ((i === 6 || i === 14) ? 'D5+F5' : '-') }
-                                ];
-
-                                const rows = window.innerWidth < 768 ? mobileRows : desktopRows;
-                                rows.forEach((row) => {
-                                    const cells = [];
-                                    for (let i = row.range[0]; i <= row.range[1]; i++) {
-                                        const val = row.value(i);
-                                        const color = row.hand === 'right' && val !== '-' ? 'text-orange-300' : (row.hand === 'right' ? 'text-slate-600' : 'text-teal-300');
-                                        cells.push(`<div id="cell-${row.hand}-${i}" data-hand="${row.hand}" data-step="${i}" data-notes="${val}" onclick="selectCell(this)" class="sequencer-step w-full mx-auto flex items-center justify-center rounded text-[10px] font-mono cursor-pointer border border-slate-300 bg-slate-400 hover:bg-slate-800 ${color} transition-all select-none overflow-hidden text-ellipsis">${val}</div>`);
-                                    }
-                                    const hintHtml = row.hint ? `<span class="ml-2 text-[10px] font-semibold text-slate-400">${row.hint}</span>` : '';
-                                    document.write(`<div class="mb-2"><div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1 flex items-center">${row.label}${hintHtml}</div><div class="sequencer-grid">${cells.join('')}</div></div>`);
-                                });
-                            </script>
+                            <div id="sequencerGridContainer"></div>
+                            <div id="sequencerPageControls" class="flex items-center justify-between gap-2 mt-2"></div>
                         </div>
                     </div>
 
                     <div class="mt-6">
                         <button id="playHandpanBtn" class="w-full px-6 py-3 bg-[#7FE7CC] hover:bg-[#9BFFE1] text-white font-bold rounded-full shadow-lg transition-all transform hover:scale-105 flex items-center justify-center gap-2 cursor-pointer">
-                            <span>🎵</span> Play 16-Step Grid Composition
+                            <span>🎵</span> Play Music
                         </button>
                     </div>
                 </div>
@@ -636,6 +622,9 @@
         const audioContextBtn = document.getElementById('audioContextBtn');
         const mixerContainer = document.getElementById('mixerContainer');
         const statusMsg = document.getElementById('statusMsg');
+        const autoStopSelect = document.getElementById('autoStopSelect');
+        const timerStatus = document.getElementById('timerStatus');
+        const timerControlWrapper = document.getElementById('timerControlWrapper');
 
         const soundTracks = {
             rain: { url: 'assets/rain.mp3', player: null },
@@ -646,10 +635,151 @@
             campfire: { url: 'assets/campfire.mp3', player: null }
         };
         let engineInitialized = false;
+        let autoStopTimer = null;
+        let autoStopDeadline = null;
+        let activeSoundNames = [];
+        let soundTrackVolumes = {};
+        let wakeLockSentinel = null;
+
+        const updateSliderFill = (slider) => {
+            const min = parseFloat(slider.min), max = parseFloat(slider.max), value = parseFloat(slider.value);
+            slider.style.setProperty('--fill-percent', `${((value - min) / (max - min)) * 100}%`);
+        };
+
+        const updateTimerDisplay = () => {
+            if (!autoStopDeadline) {
+                timerStatus.textContent = 'Choose a countdown after the engine starts.';
+                return;
+            }
+
+            const remainingMs = Math.max(0, autoStopDeadline - Date.now());
+            const minutes = Math.floor(remainingMs / 60000);
+            const seconds = Math.floor((remainingMs % 60000) / 1000);
+            timerStatus.textContent = `Auto-stop in ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        };
+
+        const releaseScreenWakeLock = async () => {
+            if (wakeLockSentinel) {
+                try { await wakeLockSentinel.release(); } catch (error) { console.warn('Wake lock release failed:', error); }
+                wakeLockSentinel = null;
+            }
+        };
+
+        const requestScreenWakeLock = async () => {
+            if (!engineInitialized || !('wakeLock' in navigator)) return;
+            if (wakeLockSentinel) return;
+            try {
+                wakeLockSentinel = await navigator.wakeLock.request('screen');
+            } catch (error) {
+                console.warn('Wake lock request failed:', error);
+            }
+        };
+
+        const stopAllTracks = () => {
+            Object.values(soundTracks).forEach((track) => {
+                if (track.player) {
+                    track.player.stop();
+                    track.player.volume.value = -10;
+                }
+            });
+
+            activeSoundNames = [];
+            soundTrackVolumes = {};
+
+            document.querySelectorAll('.sound-toggle').forEach((checkbox) => {
+                checkbox.checked = false;
+            });
+
+            document.querySelectorAll('.volume-slider').forEach((slider) => {
+                slider.value = -10;
+                updateSliderFill(slider);
+            });
+
+            if (autoStopTimer) {
+                clearInterval(autoStopTimer);
+                autoStopTimer = null;
+            }
+
+            autoStopDeadline = null;
+            autoStopSelect.value = '';
+            autoStopSelect.disabled = true;
+            timerControlWrapper.classList.add('hidden');
+            timerStatus.textContent = 'Choose a countdown after the engine starts.';
+            statusMsg.innerText = 'All tracks stopped and reset.';
+            statusMsg.classList.remove('hidden');
+
+            audioContextBtn.disabled = false;
+            audioContextBtn.innerHTML = '<span>🎵</span> Start Audio Engine';
+            audioContextBtn.classList.remove('bg-slate-500', 'hover:bg-slate-600');
+            audioContextBtn.classList.add('bg-[#7FE7CC]', 'hover:bg-[#9BFFE1]');
+            engineInitialized = false;
+        };
+
+        const resumeSoundTracks = async () => {
+            if (!engineInitialized) return;
+            await ensureAudioUnlocked();
+            await requestScreenWakeLock();
+
+            if (Tone.Transport.state !== 'started') {
+                Tone.Transport.start();
+            }
+
+            Object.entries(soundTracks).forEach(([name, track]) => {
+                if (!track.player) return;
+                const volume = soundTrackVolumes[name] ?? -10;
+                track.player.volume.value = volume;
+
+                if (activeSoundNames.includes(name)) {
+                    if (track.player.state !== 'started') {
+                        try { track.player.start(); } catch (error) { console.warn('Resume track failed:', error); }
+                    }
+                } else {
+                    try { track.player.stop(); } catch (error) { console.warn('Stop track failed:', error); }
+                }
+            });
+        };
+
+        const startAutoStopTimer = (minutes) => {
+            if (!engineInitialized) return;
+
+            if (autoStopTimer) {
+                clearInterval(autoStopTimer);
+                autoStopTimer = null;
+            }
+
+            if (!minutes) {
+                autoStopDeadline = null;
+                updateTimerDisplay();
+                return;
+            }
+
+            autoStopDeadline = Date.now() + Number(minutes) * 60000;
+            updateTimerDisplay();
+
+            autoStopTimer = window.setInterval(() => {
+                const remainingMs = autoStopDeadline - Date.now();
+                if (remainingMs <= 0) {
+                    clearInterval(autoStopTimer);
+                    autoStopTimer = null;
+                    autoStopDeadline = null;
+                    stopAllTracks();
+                    statusMsg.innerText = 'Auto-stop completed. All tracks were stopped.';
+                    return;
+                }
+                updateTimerDisplay();
+            }, 1000);
+        };
 
         audioContextBtn.addEventListener('click', async () => {
-            if (engineInitialized) return;
-            audioContextBtn.disabled = true; audioContextBtn.innerText = "Connecting..."; statusMsg.classList.remove('hidden');
+            if (engineInitialized) {
+                stopAllTracks();
+                return;
+            }
+
+            audioContextBtn.disabled = true;
+            audioContextBtn.innerHTML = '<span>🔄</span> Connecting...';
+            statusMsg.classList.remove('hidden');
+            statusMsg.innerText = 'Loading high-fidelity audio streams...';
             await ensureAudioUnlocked();
 
             let loaders = [];
@@ -664,13 +794,32 @@
 
             try {
                 await Promise.all(loaders);
-                statusMsg.innerText = "Enjoy the soundscape!"; statusMsg.classList.add('text-slate-700');
+                statusMsg.innerText = 'Enjoy the soundscape!'; statusMsg.classList.add('text-slate-700');
                 mixerContainer.classList.remove('opacity-50', 'pointer-events-none');
-                audioContextBtn.classList.add('hidden'); engineInitialized = true;
+                audioContextBtn.disabled = false;
+                audioContextBtn.innerHTML = '<span>🛑</span> Stop All';
+                audioContextBtn.classList.remove('bg-[#7FE7CC]', 'hover:bg-[#9BFFE1]');
+                audioContextBtn.classList.add('bg-slate-500', 'hover:bg-slate-600');
+                timerControlWrapper.classList.remove('hidden');
+                autoStopSelect.disabled = false;
+                autoStopSelect.value = '';
+                updateTimerDisplay();
+                engineInitialized = true;
+                await requestScreenWakeLock();
             } catch (err) {
                 statusMsg.innerText = "Error loading files. Check folder paths inside 'assets/'."; statusMsg.classList.add('text-red-400');
-                audioContextBtn.disabled = false; audioContextBtn.innerText = "Retry Engine Activation";
+                audioContextBtn.disabled = false;
+                audioContextBtn.innerHTML = '<span>🎵</span> Start Audio Engine';
+                audioContextBtn.classList.remove('bg-slate-500', 'hover:bg-slate-600');
+                audioContextBtn.classList.add('bg-[#7FE7CC]', 'hover:bg-[#9BFFE1]');
+                autoStopSelect.disabled = true;
+                autoStopSelect.value = '';
+                timerControlWrapper.classList.add('hidden');
             }
+        });
+
+        autoStopSelect.addEventListener('change', (e) => {
+            startAutoStopTimer(e.target.value);
         });
 
         document.querySelectorAll('.sound-toggle').forEach(checkbox => {
@@ -678,23 +827,46 @@
                 await ensureAudioUnlocked();
                 const soundName = e.target.getAttribute('data-sound'); const track = soundTracks[soundName];
                 if (!track || !track.player) return;
-                if (e.target.checked) { track.player.start(); } else { track.player.stop(); }
+
+                const volume = parseFloat(document.querySelector(`.volume-slider[data-sound="${soundName}"]`)?.value || '-10');
+                soundTrackVolumes[soundName] = volume;
+
+                if (e.target.checked) {
+                    activeSoundNames = [...new Set([...activeSoundNames, soundName])];
+                    track.player.volume.value = volume;
+                    track.player.start();
+                } else {
+                    activeSoundNames = activeSoundNames.filter((name) => name !== soundName);
+                    track.player.stop();
+                }
             });
         });
-
-        const updateSliderFill = (slider) => {
-            const min = parseFloat(slider.min), max = parseFloat(slider.max), value = parseFloat(slider.value);
-            slider.style.setProperty('--fill-percent', `${((value - min) / (max - min)) * 100}%`);
-        };
 
         document.querySelectorAll('.volume-slider').forEach(slider => {
             updateSliderFill(slider);
             slider.addEventListener('input', (e) => {
                 const soundName = e.target.getAttribute('data-sound'); const track = soundTracks[soundName];
                 if (!track || !track.player) return;
-                track.player.volume.value = parseFloat(e.target.value); updateSliderFill(e.target);
+                const value = parseFloat(e.target.value);
+                soundTrackVolumes[soundName] = value;
+                track.player.volume.value = value;
+                updateSliderFill(e.target);
             });
         });
+
+        const handleAudioResume = () => {
+            resumeSoundTracks();
+        };
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                handleAudioResume();
+            } else {
+                releaseScreenWakeLock();
+            }
+        });
+        window.addEventListener('pageshow', handleAudioResume);
+        window.addEventListener('focus', handleAudioResume);
 
 
         // ==========================================
@@ -712,35 +884,144 @@
         const percussionFilter = new Tone.Filter({ type: "bandpass", frequency: 800, Q: 3 }).connect(panReverb);
         const percussionSynth = new Tone.NoiseSynth({ envelope: { attack: 0.001, decay: 0.03, sustain: 0 }, volume: 2 }).connect(percussionFilter);
 
-        let activeSelectedCell = null;
+        let activeSelectedCellKey = null;
+        let sequencerPages = [];
+        let currentPageIndex = 0;
+        let playbackPageIndex = 0;
+        let playbackStepIndex = 0;
+        const sequencerGridContainer = document.getElementById('sequencerGridContainer');
+        const sequencerPageControls = document.getElementById('sequencerPageControls');
+
+        function createDefaultPage() {
+            return {
+                notes: {
+                    left: Array.from({ length: 16 }, (_, index) => (index % 2 === 0 ? 'D3' : 'ta')),
+                    right: Array.from({ length: 16 }, (_, index) => {
+                        if (index === 2 || index === 10) return 'A4+C5';
+                        if (index === 6 || index === 14) return 'D5+F5';
+                        return '-';
+                    })
+                }
+            };
+        }
+
+        function getPageValue(hand, step) {
+            return sequencerPages[currentPageIndex]?.notes?.[hand]?.[step] || '-';
+        }
+
+        function renderSequencerPage() {
+            const mobileRows = [
+                { label: 'L-hand notes (1–4)', range: [0, 3], hand: 'left', hint: '1–4' },
+                { label: 'R-hand notes (1–4)', range: [0, 3], hand: 'right', hint: '1–4' },
+                { label: 'L-hand notes (5–8)', range: [4, 7], hand: 'left', hint: '5–8' },
+                { label: 'R-hand notes (5–8)', range: [4, 7], hand: 'right', hint: '5–8' },
+                { label: 'L-hand notes (9–12)', range: [8, 11], hand: 'left', hint: '9–12' },
+                { label: 'R-hand notes (9–12)', range: [8, 11], hand: 'right', hint: '9–12' },
+                { label: 'L-hand notes (13–16)', range: [12, 15], hand: 'left', hint: '13–16' },
+                { label: 'R-hand notes (13–16)', range: [12, 15], hand: 'right', hint: '13–16' }
+            ];
+
+            const desktopRows = [
+                { label: 'L-Hand Notes (1-8)', range: [0, 7], hand: 'left' },
+                { label: 'R-Hand Notes (1-8)', range: [0, 7], hand: 'right' },
+                { label: 'L-Hand Notes (9-16)', range: [8, 15], hand: 'left' },
+                { label: 'R-Hand Notes (9-16)', range: [8, 15], hand: 'right' }
+            ];
+
+            const rows = window.innerWidth < 768 ? mobileRows : desktopRows;
+            const html = rows.map((row) => {
+                const cells = [];
+                for (let i = row.range[0]; i <= row.range[1]; i++) {
+                    const val = getPageValue(row.hand, i);
+                    const isSelected = activeSelectedCellKey === `${row.hand}-${i}`;
+                    const color = row.hand === 'right' && val !== '-' ? 'text-orange-300' : (row.hand === 'right' ? 'text-slate-600' : 'text-teal-300');
+                    const highlight = isSelected ? 'border-teal-400 ring-2 ring-teal-500/20' : '';
+                    const textColor = val === '-' ? 'text-slate-600' : color;
+                    cells.push(`<div id="cell-${row.hand}-${i}" data-hand="${row.hand}" data-step="${i}" data-notes="${val}" ondblclick="clearCell(this)" onclick="selectCell(this)" class="sequencer-step w-full mx-auto flex items-center justify-center rounded text-[10px] font-mono cursor-pointer border border-slate-300 bg-slate-400 hover:bg-slate-800 ${textColor} ${highlight} transition-all select-none overflow-hidden text-ellipsis">${val}</div>`);
+                }
+                const hintHtml = row.hint ? `<span class="ml-2 text-[10px] font-semibold text-slate-400">${row.hint}</span>` : '';
+                return `<div class="mb-2"><div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1 flex items-center">${row.label}${hintHtml}</div><div class="sequencer-grid">${cells.join('')}</div></div>`;
+            }).join('');
+
+            sequencerGridContainer.innerHTML = html;
+
+            sequencerPageControls.innerHTML = `
+                <div class="flex flex-wrap items-center gap-2">
+                    ${sequencerPages.map((_, index) => `
+                        <div class="flex items-center gap-1">
+                            <button type="button" data-page-index="${index}" class="px-2.5 py-1 rounded-full text-xs font-semibold ${index === currentPageIndex ? 'bg-teal-500 text-white' : 'bg-slate-100 text-slate-700'}">Page ${index + 1}</button>
+                            ${sequencerPages.length > 1 ? `<button type="button" data-delete-page="${index}" class="px-2 py-1 rounded-full bg-rose-500/80 text-white text-[10px] font-semibold hover:bg-rose-600">✕</button>` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+                <button id="addPageBtn" type="button" class="px-3 py-1.5 rounded-full bg-slate-700 text-white text-xs font-semibold hover:bg-slate-600">➕ Add page</button>
+            `;
+
+            sequencerPageControls.querySelectorAll('[data-page-index]').forEach((button) => {
+                button.addEventListener('click', () => {
+                    currentPageIndex = Number(button.getAttribute('data-page-index'));
+                    activeSelectedCellKey = null;
+                    renderSequencerPage();
+                });
+            });
+
+            sequencerPageControls.querySelectorAll('[data-delete-page]').forEach((button) => {
+                button.addEventListener('click', () => {
+                    const deleteIndex = Number(button.getAttribute('data-delete-page'));
+                    if (sequencerPages.length <= 1) return;
+                    sequencerPages.splice(deleteIndex, 1);
+                    currentPageIndex = Math.min(currentPageIndex, sequencerPages.length - 1);
+                    activeSelectedCellKey = null;
+                    renderSequencerPage();
+                });
+            });
+
+            const addPageBtn = document.getElementById('addPageBtn');
+            if (addPageBtn) {
+                addPageBtn.addEventListener('click', () => {
+                    sequencerPages.push(JSON.parse(JSON.stringify(sequencerPages[currentPageIndex])));
+                    currentPageIndex = sequencerPages.length - 1;
+                    activeSelectedCellKey = null;
+                    renderSequencerPage();
+                });
+            }
+        }
 
         function selectCell(element) {
-            if (activeSelectedCell === element) {
-                element.setAttribute('data-notes', '-'); element.innerText = '-';
-                element.className = element.className.replace('text-teal-300', 'text-slate-600').replace('text-orange-300', 'text-slate-600');
-                return;
-            }
-            if (activeSelectedCell) { activeSelectedCell.classList.remove('border-teal-400', 'ring-2', 'ring-teal-500/20'); }
-            activeSelectedCell = element; activeSelectedCell.classList.add('border-teal-400', 'ring-2', 'ring-teal-500/20');
+            const key = `${element.getAttribute('data-hand')}-${element.getAttribute('data-step')}`;
+            activeSelectedCellKey = activeSelectedCellKey === key ? null : key;
+            renderSequencerPage();
+        }
+
+        function clearCell(element) {
+            const hand = element.getAttribute('data-hand');
+            const step = Number(element.getAttribute('data-step'));
+            const currentPage = sequencerPages[currentPageIndex];
+            if (!currentPage) return;
+
+            currentPage.notes[hand][step] = '-';
+            activeSelectedCellKey = null;
+            renderSequencerPage();
         }
 
         function handlePadHit(note) {
             ensureAudioUnlocked().then(() => {
                 processAndPlayToken(note, Tone.now());
-                if (activeSelectedCell) {
-                    let currentNotes = activeSelectedCell.getAttribute('data-notes');
-                    let targetHand = activeSelectedCell.getAttribute('data-hand');
-                    let updatedValue = "";
+                if (activeSelectedCellKey) {
+                    const [targetHand, targetStep] = activeSelectedCellKey.split('-');
+                    const currentPage = sequencerPages[currentPageIndex];
+                    const currentNotes = currentPage.notes[targetHand][Number(targetStep)];
+                    let updatedValue = '';
 
-                    if (currentNotes === "-" || currentNotes === "---" || currentNotes === "") { updatedValue = note; }
-                    else {
-                        let existingArray = currentNotes.split('+');
-                        updatedValue = !existingArray.includes(note) ? currentNotes + "+" + note : currentNotes;
+                    if (currentNotes === '-' || currentNotes === '---' || currentNotes === '') {
+                        updatedValue = note;
+                    } else {
+                        const existingArray = currentNotes.split('+');
+                        updatedValue = !existingArray.includes(note) ? currentNotes + '+' + note : currentNotes;
                     }
 
-                    activeSelectedCell.setAttribute('data-notes', updatedValue); activeSelectedCell.innerText = updatedValue;
-                    activeSelectedCell.classList.remove('text-slate-600');
-                    activeSelectedCell.classList.add(targetHand === 'left' ? 'text-teal-300' : 'text-orange-300');
+                    currentPage.notes[targetHand][Number(targetStep)] = updatedValue;
+                    renderSequencerPage();
                 }
             });
         }
@@ -755,16 +1036,12 @@
         }
 
         function clearEntireGrid() {
-            for(let i=0; i<16; i++) {
-                ['left', 'right'].forEach(hand => {
-                    let cell = document.getElementById(`cell-${hand}-${i}`);
-                    if (cell) {
-                        cell.setAttribute('data-notes', '-'); cell.innerText = '-';
-                        cell.className = "w-9 h-10 mx-auto flex items-center justify-center rounded text-[10px] font-mono cursor-pointer border border-slate-300 bg-slate-400 hover:bg-slate-800 text-slate-600 transition-all select-none overflow-hidden text-ellipsis";
-                    }
-                });
-            }
-            if (activeSelectedCell) activeSelectedCell = null;
+            const currentPage = sequencerPages[currentPageIndex];
+            if (!currentPage) return;
+            currentPage.notes.left.fill('-');
+            currentPage.notes.right.fill('-');
+            activeSelectedCellKey = null;
+            renderSequencerPage();
         }
 
         let handpanSequence = null;
@@ -778,17 +1055,22 @@
             if (handpanSequence) {
                 Tone.Transport.stop(); handpanSequence.dispose(); handpanSequence = null;
                 document.querySelectorAll('[id^="cell-"]').forEach(c => c.classList.remove('bg-slate-700/60'));
-                button.innerHTML = "<span>🎵</span> Play 16-Step Grid Composition";
+                button.innerHTML = "<span>🎵</span> Play Music";
                 button.className = "w-full px-6 py-3 bg-[#7FE7CC] hover:bg-[#9BFFE1] text-white font-bold rounded-full shadow-lg transition-all transform hover:scale-105 flex items-center justify-center gap-2 cursor-pointer";
                 return;
             }
 
+            activeSelectedCellKey = null;
+            renderSequencerPage();
+
             button.innerHTML = "<span>🛑</span> Stop Playback";
             button.className = "w-full px-6 py-3 bg-slate-600 hover:bg-slate-500 text-white font-bold rounded-full shadow-lg transition-all transform hover:scale-105 flex items-center justify-center gap-2 cursor-pointer";
             
-            let currentStep = 0;
+            playbackPageIndex = currentPageIndex;
+            playbackStepIndex = 0;
             handpanSequence = new Tone.Loop((time) => {
-                let stepIndex = currentStep % 16;
+                const pageData = sequencerPages[playbackPageIndex];
+                const stepIndex = playbackStepIndex;
                 Tone.Draw.schedule(() => {
                     document.querySelectorAll('[id^=\"cell-\"]').forEach(c => c.classList.remove('bg-slate-700/60'));
                     let lCell = document.getElementById(`cell-left-${stepIndex}`);
@@ -797,14 +1079,31 @@
                     if (rCell) rCell.classList.add('bg-slate-700/60');
                 }, time);
 
-                processAndPlayToken(document.getElementById(`cell-left-${stepIndex}`).getAttribute('data-notes'), time);
-                processAndPlayToken(document.getElementById(`cell-right-${stepIndex}`).getAttribute('data-notes'), time);
-                currentStep++;
+                if (pageData) {
+                    const leftNotes = pageData.notes.left[stepIndex] || '-';
+                    const rightNotes = pageData.notes.right[stepIndex] || '-';
+                    processAndPlayToken(leftNotes, time);
+                    processAndPlayToken(rightNotes, time);
+                }
+
+                playbackStepIndex = (playbackStepIndex + 1) % 16;
+                const nextPlaybackPageIndex = playbackStepIndex === 0
+                    ? (playbackPageIndex + 1) % sequencerPages.length
+                    : playbackPageIndex;
+
+                if (nextPlaybackPageIndex !== currentPageIndex) {
+                    currentPageIndex = nextPlaybackPageIndex;
+                    renderSequencerPage();
+                }
+                playbackPageIndex = nextPlaybackPageIndex;
             }, "8n");
 
             Tone.Transport.bpm.value = Number(bpmSelect.value);
             handpanSequence.start(0); Tone.Transport.start();
         });
+
+        sequencerPages = [createDefaultPage()];
+        renderSequencerPage();
 
         // Initialize default view configuration after functions are hoisted
         window.addEventListener('DOMContentLoaded', () => {
