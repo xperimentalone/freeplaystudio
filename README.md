@@ -14,10 +14,10 @@ Freeplay Studio offers three unique channels for musical exploration and experim
 Turn your memories into melodies. By uploading any image, the application analyzes its unique pixel data—translating color hues, saturation, and lighting levels into custom musical scales, tempo, and synth textures. Dragging and cropping the image actively morphs the sound in real-time, allowing you to literally "play" your photos.
 
 ### 2. 🌧️ Eco-Orchestra
-Become an environmental sound conductor. This channel lets you blend high-fidelity audio elements—like rainfall, ocean waves, mountain streams, and crackling campfires—into a deeply personalized, immersive ambient soundscape for relaxation, focus, or meditation.
+Become an environmental sound conductor. Blend high-fidelity audio elements—like rainfall, ocean waves, and campfires—into a deeply personalized ambient soundscape for relaxation or focus. Use the built-in timer function to set your ideal listening duration, letting the environment fade away naturally when your session ends.
 
 ### 3. ⛰️ Secret Pan Garden
-Step into an intuitive digital composition room. Featuring a highly resonant D-Celtic handpan, you can intuitively tap out rich melodic tones or record them directly into a simplified 16-step grid sequencer to construct your own rhythmic loops flawlessly.
+Step into an intuitive digital composition room featuring a highly resonant D-Celtic handpan. Tap out rich melodic tones, layout structural loops directly into a simplified 16-step grid sequencer, or record your live session instantly to download as a high-quality MP3 file.
 
 ---
 
