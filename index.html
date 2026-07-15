@@ -55,11 +55,74 @@
             background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;
             transition: background-image 0.5s ease-in-out;
         }
+
+        #cropFrame {
+            position: absolute;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.8); /* The dimming effect */
+            pointer-events: none; /* Allows clicks to pass through the shadow if needed */
+        }
+
+        /* Ensure the container cuts off the massive shadow */
+        #previewViewport {
+            position: relative;
+            overflow: hidden; 
+        }
+
     </style>
 </head>
-<body class="text-slate-100 min-h-screen flex flex-col items-center justify-start p-6">
+<body class="text-slate-100 min-h-screen flex flex-col items-center justify-start p-6" style="background-image: url('assets/background.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
 
-    <div class="w-full max-w-xl bg-slate-900/80 backdrop-blur-md px-4 py-3 rounded-2xl shadow-2xl border border-slate-700/50 mb-8 flex flex-col gap-2 z-50">
+    <div id="welcomeOverlay" class="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-8">
+        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('assets/background.png');"></div>
+        <div class="relative w-full max-w-6xl grid items-center gap-6 lg:grid-cols-[1.2fr_0.9fr]">
+            <div class="hidden lg:block"></div>
+
+            <div class="ml-auto flex min-h-[80vh] w-full max-w-xl flex-col justify-between rounded-3xl border border-slate-200/40 bg-slate-200/80 p-6 sm:p-8 shadow-2xl text-slate-100">
+                <div>
+                    <h1 class="text-3xl sm:text-4xl font-black text-[#5DDFB8] mb-4">Welcome to FreePlay Studio! 🐢✨</h1>
+                    <p class="text-sm sm:text-base leading-7 text-slate-500">
+                        Unmute your device and get ready for a client-side journey—no user data is collected here.<br><br>
+                        Explore our cosmic canvas through three distinct channels:
+                    </p>
+                    <ul class="mt-4 space-y-3 text-sm sm:text-base text-slate-100">
+                        <li class="flex items-start gap-3">
+                            <img src="assets/icon1.png" alt="Photo-Symphony icon" class="mt-0.5 h-16 w-16 rounded-xl object-cover border border-slate-200/40 bg-slate-800/60">
+                            <div class="flex flex-col">
+                                <strong class="text-[#7FE7CC]">Photo-Symphony</strong>
+                                <span class="text-xs text-slate-700 mt-0.5">Where light becomes logic and music.</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <img src="assets/icon2.png" alt="Eco-Orchestra icon" class="mt-0.5 h-16 w-16 rounded-xl object-cover border border-slate-200/40 bg-slate-800/60">
+                            <div class="flex flex-col">
+                                <strong class="text-[#7FE7CC]">Eco-Orchestra</strong>
+                                <span class="text-xs text-slate-700 mt-0.5">The sound of the cosmos in harmony with nature.</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <img src="assets/icon3.png" alt="Secret Pan Garden icon" class="mt-0.5 h-16 w-16 rounded-xl object-cover border border-slate-200/40 bg-slate-800/60">
+                            <div class="flex flex-col">
+                                <strong class="text-[#7FE7CC]">Secret Pan Garden</strong>
+                                <span class="text-xs text-slate-700 mt-0.5">Your personal, serene musical sanctuary.</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="mt-6">
+                    <button id="enterStudioBtn" class="mt-4 w-full rounded-full bg-[#7FE7CC] hover:bg-[#9BFFE1] text-white text-sm sm:text-base px-6 py-3 shadow-lg transition-all transform hover:scale-[1.02] active:scale-95 cursor-pointer">
+                        🚀 Warp into the Cosmic Playground
+                    </button>
+                    <p class="text-[10px] sm:text-xs leading-5 text-slate-500 text-center">
+                        Special credits to Gemini for assistance on coding and image creation,<br>
+                        and Pixabay for the beautiful audio.<br>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="topNavBar" class="hidden w-full max-w-xl bg-slate-900/80 backdrop-blur-md px-4 py-3 rounded-2xl shadow-2xl border border-slate-700/50 mb-8 flex flex-col gap-2 z-50">
         <div class="flex justify-between items-center gap-2">
             <span class="text-xs font-black tracking-widest text-[#5DDFB8] uppercase pl-2 hidden sm:inline">Freeplay Studio</span>
             <div class="flex gap-1 sm:gap-2 w-full sm:w-auto justify-center">
@@ -77,20 +140,25 @@
         <p class="text-center text-[14px] text-slate-400">Remember to unmute your device to enjoy the music</p>
     </div>
 
-    <div id="view-photo-symphony" class="channel-view w-full flex flex-col items-center justify-center">
+    <div id="view-photo-symphony" class="channel-view hidden w-full flex flex-col items-center justify-center">
         <div class="max-w-lg w-full bg-slate-200/90 p-8 rounded-2xl shadow-xl border border-slate-300 text-center">
             <h1 class="text-3xl font-bold mb-2 text-[#5DDFB8]">Photo-Symphony</h1>
-            <p class="text-sm text-slate-700 mb-6" id="statusText">Upload an image to generate its unique musical vibe.</p>
+            <p class="text-sm text-slate-700 mb-6" id="statusText">Upload a photo to generate its unique musical vibe.</p>
 
             <label for="imageInput" class="px-6 py-3 bg-[#7FE7CC] hover:bg-[#9BFFE1] font-bold rounded-full shadow-lg transition-all transform hover:scale-105 inline-flex items-center justify-center gap-2 mb-6 cursor-pointer text-white text-sm">
                 <span>📷</span> Choose a Photo
             </label>
             <input type="file" id="imageInput" accept="image/*" class="hidden"/>
 
-            <div id="zoomControl" class="mx-auto mb-2 hidden w-full max-w-[320px] items-center justify-end gap-2">
-                <span class="text-sm font-semibold text-slate-700">Zoom</span>
-                <div class="rounded-md bg-slate-200/70 px-2 py-1">
-                    <input id="zoomSlider" type="range" min="0.1" max="2" step="0.1" value="1" class="h-2 w-24 cursor-pointer accent-[#9BFFE1]" />
+            <div id="photoControlRow" class="mx-auto mb-2 hidden w-full max-w-[320px] items-center justify-between gap-2">
+                <button id="shareBtn" onclick="shareComposition()" disabled class="px-3 py-2 bg-[#721ec2] hover:bg-[#8b3fd6] font-bold rounded-full shadow-lg transition-all transform hover:scale-105 flex items-center justify-center gap-2 cursor-pointer text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span>📤</span> Share
+                </button>
+                <div id="zoomControl" class="flex items-center gap-2">
+                    <span class="text-sm font-semibold text-slate-700">Zoom</span>
+                    <div class="rounded-md bg-slate-200/70 px-2 py-1">
+                        <input id="zoomSlider" type="range" min="0.1" max="2" step="0.1" value="1" class="h-2 w-24 cursor-pointer accent-[#9BFFE1]" />
+                    </div>
                 </div>
             </div>
 
@@ -99,7 +167,6 @@
                     <img id="imagePreview" class="absolute left-0 top-0 hidden select-none" alt="Uploaded preview">
                 </div>
                 <div class="pointer-events-none absolute inset-0">
-                    <div class="absolute inset-0 bg-slate-950/70"></div>
                     <div id="cropFrame" class="absolute left-1/2 top-1/2 h-[220px] w-[220px] -translate-x-1/2 -translate-y-1/2 rounded-xl border-2 border-[#9BFFE1]"></div>
                 </div>
             </div>
@@ -107,8 +174,9 @@
             <canvas id="canvas" class="hidden"></canvas>
 
             <button id="playBtn" class="px-6 py-3 bg-[#7FE7CC] hover:bg-[#9BFFE1] font-bold rounded-full shadow-lg transition-all transform hover:scale-105 items-center justify-center gap-2 w-full hidden cursor-pointer text-white text-sm">
-                <span>🎵</span> Play Image Music
+                <span>🎵</span> Play Photo Music
             </button>
+
         </div>
     </div>
 
@@ -229,7 +297,7 @@
                                 <input type="range" id="mixerVolume" min="0" max="1" step="0.01" value="0.5" class="w-full accent-[#721ec2] cursor-pointer">
                             </div>
                         </div>
-                        <button id="mixerPlayBtn" class="w-full p-4 bg-[#721ec2] hover:bg-[#3a8ebd] text-white font-bold text-base rounded-xl transition-all shadow-lg mt-2">
+                        <button id="mixerPlayBtn" class="w-full p-4 bg-[#721ec2] hover:bg-[#a05ce0] text-white font-bold text-base rounded-xl transition-all shadow-lg mt-2">
                             Play Noise
                         </button>
                     </div>
@@ -373,9 +441,9 @@
         let currentSideChannel2 = 'bright'; // Track side variant for eco orchestra
         
         const backgroundPaths = {
-            'photo-symphony': 'assets/background.png',
-            'eco-orchestra': 'assets/background2.png',
-            'secret-pan': 'assets/background_plant.png'
+            'photo-symphony': 'assets/background1.png',
+            'eco-orchestra': 'assets/background2a.png',
+            'secret-pan': 'assets/background3.png'
         };
 
         function switchChannel(channelId) {
@@ -407,7 +475,7 @@
             });
 
             if (channelId === 'eco-orchestra') {
-                document.body.style.backgroundImage = `url('${currentSideChannel2 === 'bright' ? 'assets/background2.png' : 'assets/background3.png'}')`;
+                document.body.style.backgroundImage = `url('${currentSideChannel2 === 'bright' ? 'assets/background2a.png' : 'assets/background2b.png'}')`;
             } else {
                 document.body.style.backgroundImage = `url('${backgroundPaths[channelId]}')`;
             }
@@ -429,19 +497,29 @@
             if (side === 'bright') {
                 brightContent.classList.remove('hidden');
                 darkContent.classList.add('hidden');
+                
+                // Swapping background classes directly inside className string logic
                 brightBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer bg-[#7FE7CC] text-white shadow";
                 darkBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer bg-transparent text-slate-400 hover:text-white";
                 
-                // Safety kill dark mixer audio if active when exiting
-                if (isMixerPlaying) stopMixer();
+                // Remove old style tag overrides so Tailwind v4 utilities can take control cleanly
+                brightBtn.style.backgroundColor = "";
+                darkBtn.style.backgroundColor = "";
+                
+                if (typeof isMixerPlaying !== 'undefined' && isMixerPlaying) stopMixer();
+                
             } else {
                 brightContent.classList.add('hidden');
-                darkContent.remove('hidden'); // Ensure hidden is stripped off
-                darkContent.classList.remove('hidden');
-                darkBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer bg-[#7FE7CC] text-white shadow";
+                darkContent.classList.remove('hidden'); 
+                
+                // Swapping background classes directly inside className string logic
+                darkBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer bg-[#721ec2] text-white shadow";
                 brightBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer bg-transparent text-slate-400 hover:text-white";
                 
-                // Resize canvas elements for visualizer accuracy
+                // Remove old style tag overrides so Tailwind v4 utilities can take control cleanly
+                darkBtn.style.backgroundColor = "";
+                brightBtn.style.backgroundColor = "";
+                
                 resizeMixerCanvas();
             }
         }
@@ -457,9 +535,11 @@
         const previewViewport = document.getElementById('previewViewport');
         const imagePreview = document.getElementById('imagePreview');
         const cropFrame = document.getElementById('cropFrame');
+        const photoControlRow = document.getElementById('photoControlRow');
         const zoomControl = document.getElementById('zoomControl');
         const zoomSlider = document.getElementById('zoomSlider');
-
+        const shareBtn = document.getElementById('shareBtn');
+        
         const synth = new Tone.PolySynth(Tone.Synth, {
             oscillator: { type: "triangle" },
             envelope: { attack: 0.1, decay: 0.2, sustain: 0.5, release: 0.8 }
@@ -517,6 +597,12 @@
         let currentScaleName = "pentatonic";
         let noteLength = "8n";
         let playingSequence = null;
+        let audioRecorder = null;
+        let audioMimeType = 'audio/webm';
+        let recordedChunks = [];
+        let isRecordingAudio = false;
+        let sharedMessageText = "Hear my photo symphony! 📸 Mix your own masterpiece on FreePlay Studio";
+        let sharedUrl = 'https://xperimentalone.github.io/freeplaystudio';
         let rawPixelData = null;
         let currentVolume = 0.8;
         let currentImage = null;
@@ -593,6 +679,33 @@
 
         function stopDragging() { isDragging = false; previewViewport.style.cursor = 'grab'; }
 
+        // Helper to extract original resolution crop bounding boxes
+        function getOriginalResolutionCropCanvas() {
+            if (!currentImage || !originalImageCanvas) return null;
+
+            const imageRect = imagePreview.getBoundingClientRect();
+            const frameRect = cropFrame.getBoundingClientRect();
+
+            // Calculate scaling ratios between actual image size and screen displayed size
+            const scaleX = currentImage.naturalWidth / imageRect.width;
+            const scaleY = currentImage.naturalHeight / imageRect.height;
+
+            // Source coordinates on the high-res image
+            const sourceWidth = Math.max(1, Math.min(currentImage.naturalWidth, Math.round(frameRect.width * scaleX)));
+            const sourceHeight = Math.max(1, Math.min(currentImage.naturalHeight, Math.round(frameRect.height * scaleY)));
+            const sourceX = clamp(Math.round((frameRect.left - imageRect.left) * scaleX), 0, Math.max(0, currentImage.naturalWidth - sourceWidth));
+            const sourceY = clamp(Math.round((frameRect.top - imageRect.top) * scaleY), 0, Math.max(0, currentImage.naturalHeight - sourceHeight));
+
+            // Create a canvas holding the high-res cropped output
+            const highResCanvas = document.createElement('canvas');
+            highResCanvas.width = sourceWidth;
+            highResCanvas.height = sourceHeight;
+            const highResCtx = highResCanvas.getContext('2d');
+            
+            highResCtx.drawImage(originalImageCanvas, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, sourceWidth, sourceHeight);
+            return highResCanvas;
+        }
+
         previewViewport.addEventListener('pointerdown', (e) => {
             if (!currentImage || e.button !== 0) return;
             e.preventDefault(); isDragging = true;
@@ -623,7 +736,8 @@
                     originalImageCanvas = document.createElement('canvas');
                     originalImageCanvas.width = img.naturalWidth; originalImageCanvas.height = img.naturalHeight;
                     originalImageCanvas.getContext('2d').drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight);
-                    zoomLevel = 1; zoomSlider.value = '1'; zoomControl.classList.remove('hidden'); zoomControl.classList.add('flex');
+                    zoomLevel = 1; zoomSlider.value = '1'; photoControlRow.classList.remove('hidden'); photoControlRow.classList.add('flex');
+                    shareBtn.disabled = false;
                     imagePreview.src = event.target.result; imagePreview.draggable = false;
                     imagePreview.style.width = `${img.naturalWidth}px`; imagePreview.style.height = `${img.naturalHeight}px`;
                     imagePreview.style.maxWidth = 'none'; imagePreview.style.maxHeight = 'none';
@@ -668,36 +782,323 @@
         photoPlayBtn.addEventListener('click', async () => {
             await ensureAudioUnlocked();
             if (playingSequence) {
-                playingSequence.stop(); playingSequence.dispose(); playingSequence = null;
-                photoPlayBtn.innerHTML = "<span>🎵</span> Play Image Music";
+                // STOP MUSIC LOGIC
+                try {
+                    if (playingSequence) { playingSequence.dispose(); playingSequence = null; }
+                    Tone.Transport.stop();
+                } catch(e) {}
+                photoPlayBtn.innerHTML = "<span>🎵</span> Play Photo Music";
                 photoPlayBtn.classList.remove('bg-slate-500','hover:bg-slate-600');
                 photoPlayBtn.classList.add('bg-[#7FE7CC]','hover:bg-[#9BFFE1]');
-                return;
-            }
-            renderCurrentCropToCanvas(); analyzeImageProperties();
-            let columnStep = 0;
-            playingSequence = new Tone.Loop((time) => {
-                if (!rawPixelData) return;
-                for (let row = 0; row < CANVAS_SIZE; row++) {
-                    const pixelIndex = (row * CANVAS_SIZE + columnStep) * 4;
-                    const r = rawPixelData[pixelIndex], g = rawPixelData[pixelIndex+1], b = rawPixelData[pixelIndex+2], a = rawPixelData[pixelIndex+3];
-                    if (a < 10) continue;
-                    const [, , l] = rgbToHsl(r, g, b);
-                    if (l > 0.15 && Math.random() < (l * 0.75)) {
+                statusText.innerText = "Music stopped. Ready to create more vibes!";
+                
+                // Stop recording and keep share button available separately from playback
+                if (audioRecorder && isRecordingAudio) {
+                    audioRecorder.stop();
+                    isRecordingAudio = false;
+                }
+            } else {
+                // START MUSIC LOGIC
+                await ensureAudioUnlocked();
+                statusText.innerText = `Analyzing visual spectrum... Playing ${currentScaleName} scale progression.`;
+                photoPlayBtn.innerHTML = "<span>⏹️</span> Stop Music";
+                
+                // Connect Tone.js destination stream to MediaStreamRecorder
+                recordedChunks = [];
+                const dest = Tone.getContext().rawContext.createMediaStreamDestination();
+                Tone.Destination.connect(dest);
+                
+                // Fallback selection to the best audio container supported by the browser
+                audioMimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/ogg';
+                let options = { mimeType: audioMimeType };
+                
+                try {
+                    audioRecorder = new MediaRecorder(dest.stream, options);
+                    audioRecorder.ondataavailable = (e) => {
+                        if (e.data && e.data.size > 0) recordedChunks.push(e.data);
+                    };
+                    audioRecorder.start();
+                    isRecordingAudio = true;
+                } catch(err) {
+                    console.warn("Media Recording not supported on this browser engine configuration:", err);
+                }
+
+                renderCurrentCropToCanvas(); analyzeImageProperties();
+                let columnStep = 0;
+                
+                playingSequence = new Tone.Loop((time) => {
+                    if (!rawPixelData) return;
+                    
+                    // Initialize chord node counter for this specific beat
+                    let notesInThisChord = 0;
+                    const maxNotesPerChord = 4; // Caps harmonies to keep them clean
+                    
+                    for (let row = 0; row < CANVAS_SIZE; row++) {
+                        // Stop processing notes immediately if the chord is full
+                        if (notesInThisChord >= maxNotesPerChord) break;
+
+                        const pixelIndex = (row * CANVAS_SIZE + columnStep) * 4;
+                        const r = rawPixelData[pixelIndex];
+                        const g = rawPixelData[pixelIndex+1];
+                        const b = rawPixelData[pixelIndex+2];
+                        const a = rawPixelData[pixelIndex+3];
+                        
+                        if (a < 10) continue;
+                        const [, , l] = rgbToHsl(r, g, b);
+                        
+                        // Note indexing remains mapped to lightness 
                         const noteIndex = Math.floor(l * (currentScale.length - 1));
                         const targetNote = currentScale[clamp(noteIndex, 0, currentScale.length - 1)];
-                        const velocity = clamp((r + g + b) / (255 * 3) * currentVolume, 0.1, 0.9);
-                        synth.triggerAttackRelease(targetNote, noteLength, time, velocity);
+                        
+                        // 1. Calculate standard velocity from pixel brightness
+                        const baseVelocity = (r + g + b) / (255 * 3);
+                        
+                        // 2. Compute Bass Boost (Dynamic Equalizer Curve)
+                        // Low pitch index (dark pixel) = high multiplier boost
+                        // High pitch index (bright pixel) = multiplier stays near 1.0
+                        const positionInScale = noteIndex / (currentScale.length - 1);
+                        const bassBoost = 1.0 + (4.5 * (1.0 - positionInScale)); 
+                        
+                        // 3. Scale by global volume and clamp safely with a lifted audio floor (0.2)
+                        const finalVelocity = clamp(baseVelocity * bassBoost * currentVolume, 0.2, 0.95);
+                        
+                        // Trigger the notes smoothly
+                        synth.triggerAttackRelease(targetNote, noteLength, time, finalVelocity);
+                        
+                        // Increment chord limit counter
+                        notesInThisChord++;
                     }
-                }
-                columnStep = (columnStep + 1) % CANVAS_SIZE;
-            }, "8n");
-            photoPlayBtn.innerHTML = "<span>🛑</span> Stop Music";
-            photoPlayBtn.classList.remove('bg-[#7FE7CC]','hover:bg-[#9BFFE1]');
-            photoPlayBtn.classList.add('bg-slate-500','hover:bg-slate-600');
-            playingSequence.start(0); Tone.Transport.start();
+                    columnStep = (columnStep + 1) % CANVAS_SIZE;
+                }, "8n");
+                
+                photoPlayBtn.innerHTML = "<span>🛑</span> Stop Music";
+                photoPlayBtn.classList.remove('bg-[#7FE7CC]','hover:bg-[#9BFFE1]');
+                photoPlayBtn.classList.add('bg-slate-500','hover:bg-slate-600');
+                playingSequence.start(0); Tone.Transport.start();
+            }
         });
 
+        async function finalizeRecordingForShare() {
+            if (audioRecorder && isRecordingAudio && audioRecorder.state === 'recording') {
+                return new Promise(resolve => {
+                    audioRecorder.onstop = () => {
+                        isRecordingAudio = false;
+                        resolve();
+                    };
+                    audioRecorder.stop();
+                });
+            }
+        }
+
+        async function shareComposition() {
+            // 1. Get high resolution crop canvas
+            const cropCanvas = getOriginalResolutionCropCanvas();
+            if (!cropCanvas) {
+                alert("Please upload and arrange an image first!");
+                return;
+            }
+
+            // Change status layout to show encoding state
+            const originalShareText = shareBtn.innerHTML;
+            shareBtn.disabled = true;
+            shareBtn.innerHTML = "🎬 Generating Video...";
+
+            // 2. Setup standard Audio Destination recorder from Tone.js
+            const audioDestination = Tone.getContext().rawContext.createMediaStreamDestination();
+            synth.connect(audioDestination);
+
+            // 3. Capture video frames from the crop canvas at 30fps
+            const videoStream = cropCanvas.captureStream(30);
+            
+            const combinedStream = new MediaStream([
+                videoStream.getVideoTracks()[0],
+                audioDestination.stream.getAudioTracks()[0]
+            ]);
+
+            // 4. Instantiate MediaRecorder using a sharing-compatible container hierarchy
+            let options = {};
+            const candidateTypes = [
+                'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
+                'video/mp4;codecs=h264',
+                'video/mp4',
+                'video/webm;codecs=vp9,opus',
+                'video/webm'
+            ];
+
+            let chosenMimeType = '';
+            for (const type of candidateTypes) {
+                if (MediaRecorder.isTypeSupported(type)) {
+                    chosenMimeType = type;
+                    options = { mimeType: type };
+                    break;
+                }
+            }
+            
+            const videoChunks = [];
+            const mediaRecorder = new MediaRecorder(combinedStream, options);
+
+            mediaRecorder.ondataavailable = (e) => {
+                if (e.data && e.data.size > 0) videoChunks.push(e.data);
+            };
+
+            mediaRecorder.onstop = async () => {
+                // Disconnect recording node safely
+                synth.disconnect(audioDestination);
+                
+                const mimeType = chosenMimeType || 'video/webm';
+                const videoBlob = new Blob(videoChunks, { type: mimeType });
+                const videoUrl = URL.createObjectURL(videoBlob);
+                
+                // Restore main button state
+                shareBtn.disabled = false;
+                shareBtn.innerHTML = originalShareText;
+
+                const extension = mimeType.includes('mp4') ? 'mp4' : 'webm';
+                const filename = `photo-symphony-${Date.now()}.${extension}`;
+                const videoFile = new File([videoBlob], filename, { type: mimeType });
+
+                // Remove any old existing modal
+                const oldModal = document.getElementById('share-modal-overlay');
+                if (oldModal) oldModal.remove();
+
+                // 5. Build the Interactive Share Modal overlay UI
+                const modal = document.createElement('div');
+                modal.id = 'share-modal-overlay';
+                modal.className = 'fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm';
+                modal.innerHTML = `
+                    <div class="bg-slate-300 border border-slate-500 p-6 rounded-2xl max-w-sm w-full text-center shadow-2xl">
+                        <h3 class="text-xl font-bold text-black mb-2">✨ Video Generated!</h3>
+                        <p class="text-slate-700 text-sm mb-4">Your Photo-Symphony video is ready. Choose an option below:</p>
+                        
+                        <div class="flex flex-col gap-3">
+                            <button id="modalShareBtn" class="w-full bg-[#7FE7CC] hover:bg-[#9BFFE1] text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer shadow-md">
+                                📤 Send to WhatsApp / Social Apps
+                            </button>
+                            <button id="modalDownloadBtn" class="w-full bg-[#7FE7CC] hover:bg-[#9BFFE1] text-white font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer shadow-md">
+                                💾 Download File Directly
+                            </button>
+                            <button id="modalCloseBtn" class="w-full text-slate-700 hover:text-slate-500 text-sm py-2 transition mt-1 cursor-pointer">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+
+                // Action: Share via Native Share Panel
+                document.getElementById('modalShareBtn').onclick = async () => {
+                    if (navigator.canShare && navigator.canShare({ files: [videoFile] })) {
+                        try {
+                            await navigator.share({
+                                files: [videoFile],
+                                title: 'My Photo-Symphony',
+                                text: 'Check out this audio-visual loop I generated from my photo!'
+                            });
+                            modal.remove();
+                        } catch (error) {
+                            if (error.name !== 'AbortError') {
+                                console.error('Share window rejected:', error);
+                                alert('Your system rejected native file sharing. Saving via direct download instead.');
+                                triggerDownload(videoUrl, filename);
+                            }
+                        }
+                    } else {
+                        alert('Your mobile web browser profile does not support sharing this file type. Saving via download.');
+                        triggerDownload(videoUrl, filename);
+                    }
+                };
+
+                // Action: Traditional Download
+                document.getElementById('modalDownloadBtn').onclick = () => {
+                    triggerDownload(videoUrl, filename);
+                };
+
+                // Action: Dismiss Modal
+                document.getElementById('modalCloseBtn').onclick = () => {
+                    modal.remove();
+                };
+            };
+
+            function triggerDownload(url, name) {
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = name;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+
+            // Dynamic Recording Length Calculation (3 loops)
+            const loopDurationMs = Tone.Time("2m").toMilliseconds() * 3;
+
+            // 6. Start Recording loop
+            mediaRecorder.start();
+
+            if (playingSequence) {
+                playBtn.click(); 
+            }
+            playBtn.click(); 
+            
+            const highResCtx = cropCanvas.getContext('2d');
+            const frameInterval = setInterval(() => {
+                if (originalImageCanvas) {
+                    const imageRect = imagePreview.getBoundingClientRect();
+                    const frameRect = cropFrame.getBoundingClientRect();
+                    const scaleX = currentImage.naturalWidth / imageRect.width;
+                    const scaleY = currentImage.naturalHeight / imageRect.height;
+                    const sourceWidth = Math.max(1, Math.min(currentImage.naturalWidth, Math.round(frameRect.width * scaleX)));
+                    const sourceHeight = Math.max(1, Math.min(currentImage.naturalHeight, Math.round(frameRect.height * scaleY)));
+                    const sourceX = clamp(Math.round((frameRect.left - imageRect.left) * scaleX), 0, Math.max(0, currentImage.naturalWidth - sourceWidth));
+                    const sourceY = clamp(Math.round((frameRect.top - imageRect.top) * scaleY), 0, Math.max(0, currentImage.naturalHeight - sourceHeight));
+                    
+                    // Draw the base high-resolution photo crop
+                    highResCtx.drawImage(originalImageCanvas, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, sourceWidth, sourceHeight);
+
+                    // --- LOW-PROFILE WATERMARK GENERATION SECTION ---
+                    // Keep the exported video on the original high-resolution crop canvas.
+                    const padding = Math.max(10, Math.round(sourceWidth * 0.01));
+                    const fontSize = Math.max(10, Math.round(sourceWidth * 0.012));
+                    const watermarkText = "Created by FreePlay Studio";
+
+                    highResCtx.save();
+                    highResCtx.font = `500 ${fontSize}px sans-serif`;
+                    highResCtx.textBaseline = "middle";
+                    const textWidth = highResCtx.measureText(watermarkText).width;
+                    const boxHeight = Math.max(24, Math.round(fontSize * 1.5));
+                    // Removed Math.max(180, ...) so the box perfectly hugs your text
+                    const boxWidth = Math.round(textWidth + padding * 1.5); 
+                    const boxX = Math.max(padding, sourceWidth - boxWidth - padding);
+                    const boxY = Math.max(padding, sourceHeight - boxHeight - padding);
+
+                    // Define the corner radius (e.g., 6 pixels for a smooth, subtle round)
+                    const cornerRadius = 6; 
+
+                    // Create the rounded rectangle path
+                    highResCtx.beginPath();
+                    highResCtx.roundRect(boxX, boxY, boxWidth, boxHeight, cornerRadius);
+
+                    // Fill the background
+                    highResCtx.fillStyle = "rgba(226, 232, 240, 0.5)"; // bg-slate-200/50
+                    highResCtx.fill();
+
+                    // Draw the border
+                    highResCtx.strokeStyle = "rgba(100, 116, 139, 0.35)";
+                    highResCtx.stroke();
+
+                    // Draw the text
+                    highResCtx.fillStyle = "#334155"; // text-slate-700
+                    highResCtx.fillText(watermarkText, boxX + padding, boxY + boxHeight / 2);
+                    highResCtx.restore();
+                    // ------------------------------------
+                }
+            }, 100);
+
+            setTimeout(() => {
+                clearInterval(frameInterval);
+                if (playingSequence) playBtn.click(); 
+                mediaRecorder.stop(); 
+            }, loopDurationMs);
+        }
 
         // ==========================================
         // CHANNEL LOGIC 2: ECO-ORCHESTRA (AMENDED)
@@ -743,7 +1144,7 @@
                 darkBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer bg-transparent text-slate-400 hover:text-white";
                 
                 // Swap back to standard background
-                document.body.style.backgroundImage = "url('assets/background2.png')";
+                document.body.style.backgroundImage = "url('assets/background2a.png')";
 
                 // Revert visual card styling to bright
                 ecoCard.classList.add('bg-slate-200/90', 'text-white');
@@ -763,7 +1164,7 @@
                 brightBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer bg-transparent text-slate-400 hover:text-white";
                 
                 // Swap background to background3.png on Dark Side
-                document.body.style.backgroundImage = "url('assets/background3.png')";
+                document.body.style.backgroundImage = "url('assets/background2b.png')";
 
                 // Apply dark visual card styling
                 ecoCard.classList.remove('bg-slate-200/90', 'text-white');
@@ -1326,12 +1727,23 @@
         // ==========================================
         const handpanSynth = new Tone.PolySynth(Tone.FMSynth, {
             harmonicity: 2.01, modulationIndex: 3, oscillator: { type: "sine" }, modulation: { type: "sine" },
-            envelope: { attack: 0.005, decay: 0.4, sustain: 0.2, release: 1.8 }, volume: 8
+            envelope: { attack: 0.005, decay: 0.4, sustain: 0.2, release: 1.5 }, volume: 8
         });
 
-        const panReverb = new Tone.Reverb({ roomSize: 0.85, wet: 0.4, decay: 2.5 }).toDestination();
+        // Create a dedicated Low-Shelf filter to boost the low-end frequencies (below 500Hz)
+        const handpanBassEQ = new Tone.Filter({
+            type: "lowshelf",
+            frequency: 500,
+            gain: 6 // Boosts the deep bass frequencies by 6 decibels
+        });
+
+        const panReverb = new Tone.Reverb({ roomSize: 0.85, wet: 0.4, decay: 2 }).toDestination();
         const panDelay = new Tone.FeedbackDelay({ delayTime: "4n.", feedback: 0.25, wet: 0.15 }).connect(panReverb);
-        handpanSynth.connect(panDelay);
+
+        // ROUTING: Synth -> Bass EQ -> Delay -> Reverb
+        handpanSynth.disconnect();
+        handpanSynth.connect(handpanBassEQ);
+        handpanBassEQ.connect(panDelay);
 
         const percussionFilter = new Tone.Filter({ type: "bandpass", frequency: 800, Q: 3 }).connect(panReverb);
         const percussionSynth = new Tone.NoiseSynth({ envelope: { attack: 0.001, decay: 0.03, sustain: 0 }, volume: 2 }).connect(percussionFilter);
@@ -1622,10 +2034,45 @@
 
         function processAndPlayToken(token, time) {
             if (!token || token === '-' || token === '---') return;
-            token.split('+').forEach(note => {
+            
+            // 1. Split by '+' and cap the array to a maximum of 6 notes to prevent chord clashing
+            const notesArray = token.split('+');
+            
+            let notesInThisChord = 0;
+            const maxNotesPerChord = 6; 
+
+            notesArray.forEach(note => {
                 let cleanNote = note.trim();
-                if (cleanNote.toLowerCase() === 'ta') { percussionSynth.triggerAttackRelease("16n", time); } 
-                else if (cleanNote) { handpanSynth.triggerAttackRelease(cleanNote, "4n", time); }
+                if (!cleanNote) return;
+
+                if (cleanNote.toLowerCase() === 'ta') { 
+                    // Keep your percussion trigger exactly as it was
+                    percussionSynth.triggerAttackRelease("16n", time); 
+                } 
+                else { 
+                    // Only play musical notes if we haven't hit our chord limit yet
+                    if (notesInThisChord < maxNotesPerChord) {
+                        
+                        // 2. Find where the note sits inside your currentScale array
+                        const noteIndex = currentScale.indexOf(cleanNote);
+                        let bassBoost = 4.0; // Default fallback multiplier
+
+                        if (noteIndex !== -1 && currentScale.length > 1) {
+                            // 3. Compute Bass Boost Curve: scale 0.0 (low) to 1.0 (high)
+                            const positionInScale = noteIndex / (currentScale.length - 1);
+                            bassBoost = 4.0 + (6.5 * (1.0 - positionInScale)); 
+                        }
+
+                        // 4. Calculate smart velocity with a baseline volume floor of 0.15
+                        const baseVelocity = 0.15; 
+                        const finalVelocity = clamp(baseVelocity * bassBoost * currentVolume, 0.2, 5);
+
+                        // Play the handpan note with the dynamic velocity calculation
+                        handpanSynth.triggerAttackRelease(cleanNote, "4n", time, finalVelocity);
+                        
+                        notesInThisChord++;
+                    }
+                }
             });
         }
 
@@ -1700,9 +2147,26 @@
         sequencerPages = [createDefaultPage()];
         renderSequencerPage();
 
+        const enterStudioBtn = document.getElementById('enterStudioBtn');
+        const welcomeOverlay = document.getElementById('welcomeOverlay');
+        const topNavBar = document.getElementById('topNavBar');
+
+        if (enterStudioBtn && welcomeOverlay && topNavBar) {
+            enterStudioBtn.addEventListener('click', () => {
+                welcomeOverlay.classList.add('hidden');
+                topNavBar.classList.remove('hidden');
+                document.querySelectorAll('.channel-view').forEach(view => view.classList.add('hidden'));
+                document.getElementById('view-photo-symphony').classList.remove('hidden');
+                document.body.style.backgroundImage = "url('assets/background1.png')";
+                document.body.style.backgroundColor = 'transparent';
+            });
+        }
+
         // Initialize default view configuration after functions are hoisted
         window.addEventListener('DOMContentLoaded', () => {
-            switchChannel('photo-symphony');
+            document.querySelectorAll('.channel-view').forEach(view => view.classList.add('hidden'));
+            document.body.style.backgroundImage = "url('assets/background.png')";
+            document.body.style.backgroundColor = '#020617';
         });
     </script>
 </body>
