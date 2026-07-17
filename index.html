@@ -80,9 +80,8 @@
             <div class="ml-auto flex min-h-[80vh] w-full max-w-xl flex-col justify-between rounded-3xl border border-slate-300/40 bg-slate-200/80 p-6 sm:p-8 shadow-2xl text-slate-100">
                 <div>
                     <h1 class="text-3xl sm:text-4xl font-black text-[#5DDFB8] mb-4">Welcome to FreePlay Studio</h1>
-                    <p class="text-sm sm:text-base leading-7 text-slate-500">
-                        Unmute your device and get ready for a client-side journey—no user data is collected here.<br>
-                        Explore our cosmic canvas through three distinct channels:
+                    <p class="text-sm sm:text-base leading-7 text-slate-500 text-justify">
+                        Unmute your device and get ready for a client-side journey—no user data is collected here. Explore our cosmic canvas through three distinct channels:<br>                        
                     </p>
                     <ul class="mt-4 space-y-3 text-sm sm:text-base text-slate-100">
                         <li class="flex items-start gap-3">
@@ -113,9 +112,8 @@
                     <button id="enterStudioBtn" class="mt-4 w-full rounded-full bg-[#7FE7CC] hover:bg-[#9BFFE1] text-white text-sm sm:text-base px-6 py-3 shadow-lg transition-all transform hover:scale-[1.02] active:scale-95 cursor-pointer">
                         🚀 Warp into the Cosmic Playground
                     </button>
-                    <p class="text-[10px] sm:text-xs leading-5 text-slate-500 text-center">
-                        Special credits to Gemini for assistance on coding and image creation,<br>
-                        and Pixabay for the beautiful audio.<br>
+                    <p class="text-[10px] sm:text-xs leading-5 text-slate-500 text-justify">
+                        Special credits to Gemini for assistance on coding and image creation, and Pixabay for the beautiful audio. <br>
                     </p>
                 </div>
             </div>
@@ -992,7 +990,8 @@
                             await navigator.share({
                                 files: [videoFile],
                                 title: 'My Photo-Symphony',
-                                text: 'Check out this audio-visual loop I generated from my photo!'
+                                text: sharedMessageText, 
+                                url: sharedUrl
                             });
                             modal.remove();
                         } catch (error) {
@@ -1056,8 +1055,8 @@
 
                     // --- LOW-PROFILE WATERMARK GENERATION SECTION ---
                     // Keep the exported video on the original high-resolution crop canvas.
-                    const padding = Math.max(10, Math.round(sourceWidth * 0.01));
-                    const fontSize = Math.max(10, Math.round(sourceWidth * 0.012));
+                    const padding = Math.max(10, Math.round(sourceWidth * 0.012));
+                    const fontSize = Math.max(10, Math.round(sourceWidth * 0.015));
                     const watermarkText = "Created by FreePlay Studio";
 
                     highResCtx.save();
