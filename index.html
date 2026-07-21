@@ -988,7 +988,8 @@
                             await navigator.share({
                                 files: [videoFile],
                                 title: 'My Photo-Symphony',
-                                text: `${sharedMessageText}\n${sharedUrl}`
+                                text: sharedMessageText, 
+                                url: sharedUrl
                             });
                             modal.remove();
                         } catch (error) {
@@ -1024,8 +1025,8 @@
                 document.body.removeChild(a);
             }
 
-            // Dynamic Recording Length Calculation (4 loops)
-            const loopDurationMs = Tone.Time("2m").toMilliseconds() * 4;
+            // Dynamic Recording Length Calculation (3 loops)
+            const loopDurationMs = Tone.Time("2m").toMilliseconds() * 3;
 
             // 6. Start Recording loop
             mediaRecorder.start();
