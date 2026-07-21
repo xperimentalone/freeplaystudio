@@ -538,12 +538,15 @@
         const zoomSlider = document.getElementById('zoomSlider');
         const shareBtn = document.getElementById('shareBtn');
         
+        const limiter1 = new Tone.Limiter(-1).toDestination(); // Prevents signal from clipping above -1 dB
         const synth = new Tone.PolySynth(Tone.Synth, {
+            volume: -6, // Reduced master synth gain
             oscillator: { type: "triangle" },
             envelope: { attack: 0.1, decay: 0.2, sustain: 0.5, release: 0.8 }
         });
         const reverb = new Tone.Reverb({ decay: 4, wet: 0.5 });
         const bitcrusher = new Tone.BitCrusher({ bits: 4, wet: 0 });
+
         const synthPresets = {
             pentatonic: { oscillator: { type: "triangle" }, envelope: { attack: 0.005, decay: 0.15, sustain: 0.2, release: 0.3 } },
             lydian: { oscillator: { type: "triangle" }, envelope: { attack: 0.08, decay: 0.2, sustain: 0.6, release: 1.4 } },
@@ -551,7 +554,8 @@
             minor: { oscillator: { type: "triangle" }, envelope: { attack: 0.15, decay: 0.4, sustain: 0.5, release: 0.8 } }
         };
         
-        synth.chain(bitcrusher, reverb, Tone.Destination);
+        // Route through limiter before destination
+        synth.chain(bitcrusher, reverb, limiter1);
 
         let audioUnlocked = false;
         let audioUnlockAttempted = false;
@@ -822,51 +826,45 @@
                 }
 
                 renderCurrentCropToCanvas(); analyzeImageProperties();
-                let columnStep = 0;
-                
+
                 playingSequence = new Tone.Loop((time) => {
                     if (!rawPixelData) return;
                     
-                    // Initialize chord node counter for this specific beat
                     let notesInThisChord = 0;
-                    const maxNotesPerChord = 4; // Caps harmonies to keep them clean
-                    
-                    for (let row = 0; row < CANVAS_SIZE; row++) {
-                        // Stop processing notes immediately if the chord is full
-                        if (notesInThisChord >= maxNotesPerChord) break;
+                    const maxNotesPerChord = 4; // Caps notes played simultaneously on this beat
+                    const totalPixels = CANVAS_SIZE * CANVAS_SIZE; // 256 total pixels
 
-                        const pixelIndex = (row * CANVAS_SIZE + columnStep) * 4;
+                    // Randomly pick up to 4 different pixels from anywhere in the image
+                    for (let i = 0; i < maxNotesPerChord; i++) {
+                        // Generate a random pixel index between 0 and 255
+                        const randomPixel = Math.floor(Math.random() * totalPixels);
+                        const pixelIndex = randomPixel * 4;
+
                         const r = rawPixelData[pixelIndex];
-                        const g = rawPixelData[pixelIndex+1];
-                        const b = rawPixelData[pixelIndex+2];
-                        const a = rawPixelData[pixelIndex+3];
+                        const g = rawPixelData[pixelIndex + 1];
+                        const b = rawPixelData[pixelIndex + 2];
+                        const a = rawPixelData[pixelIndex + 3];
                         
+                        // Skip transparent or near-black empty pixels
                         if (a < 10) continue;
+
                         const [, , l] = rgbToHsl(r, g, b);
                         
-                        // Note indexing remains mapped to lightness 
+                        // Map lightness to scale note
                         const noteIndex = Math.floor(l * (currentScale.length - 1));
                         const targetNote = currentScale[clamp(noteIndex, 0, currentScale.length - 1)];
                         
-                        // 1. Calculate standard velocity from pixel brightness
+                        // Calculate velocity & bass boost
                         const baseVelocity = (r + g + b) / (255 * 3);
-                        
-                        // 2. Compute Bass Boost (Dynamic Equalizer Curve)
-                        // Low pitch index (dark pixel) = high multiplier boost
-                        // High pitch index (bright pixel) = multiplier stays near 1.0
                         const positionInScale = noteIndex / (currentScale.length - 1);
                         const bassBoost = 1.0 + (4.5 * (1.0 - positionInScale)); 
+                        const finalVelocity = clamp(baseVelocity * bassBoost * currentVolume * 0.45, 0.1, 0.45);
                         
-                        // 3. Scale by global volume and clamp safely with a lifted audio floor (0.2)
-                        const finalVelocity = clamp(baseVelocity * bassBoost * currentVolume, 0.2, 0.95);
-                        
-                        // Trigger the notes smoothly
+                        // Trigger the note
                         synth.triggerAttackRelease(targetNote, noteLength, time, finalVelocity);
                         
-                        // Increment chord limit counter
                         notesInThisChord++;
                     }
-                    columnStep = (columnStep + 1) % CANVAS_SIZE;
                 }, "8n");
                 
                 photoPlayBtn.innerHTML = "<span>🛑</span> Stop Music";
@@ -1027,8 +1025,8 @@
                 document.body.removeChild(a);
             }
 
-            // Dynamic Recording Length Calculation (3 loops)
-            const loopDurationMs = Tone.Time("2m").toMilliseconds() * 3;
+            // Dynamic Recording Length Calculation (4 loops)
+            const loopDurationMs = Tone.Time("2m").toMilliseconds() * 4;
 
             // 6. Start Recording loop
             mediaRecorder.start();
@@ -1057,7 +1055,7 @@
                     // Keep the exported video on the original high-resolution crop canvas.
                     const padding = Math.max(10, Math.round(sourceWidth * 0.012));
                     const fontSize = Math.max(10, Math.round(sourceWidth * 0.015));
-                    const watermarkText = "Created by FreePlay Studio";
+                    const watermarkText = "Created with FreePlay Studio";
 
                     highResCtx.save();
                     highResCtx.font = `500 ${fontSize}px sans-serif`;
@@ -1724,22 +1722,24 @@
         // ==========================================
         // CHANNEL LOGIC 3: SECRET PAN GARDEN
         // ==========================================
+        const limiter3 = new Tone.Limiter(-1).toDestination();
+
         const handpanSynth = new Tone.PolySynth(Tone.FMSynth, {
             harmonicity: 2.01, modulationIndex: 3, oscillator: { type: "sine" }, modulation: { type: "sine" },
-            envelope: { attack: 0.005, decay: 0.4, sustain: 0.2, release: 1.5 }, volume: 8
+            envelope: { attack: 0.005, decay: 0.4, sustain: 0.2, release: 1.5 }, 
+            volume: 4 
         });
 
-        // Create a dedicated Low-Shelf filter to boost the low-end frequencies (below 500Hz)
         const handpanBassEQ = new Tone.Filter({
             type: "lowshelf",
-            frequency: 500,
-            gain: 6 // Boosts the deep bass frequencies by 6 decibels
+            frequency: 380,
+            gain: 9.0 
         });
 
-        const panReverb = new Tone.Reverb({ roomSize: 0.85, wet: 0.4, decay: 2 }).toDestination();
-        const panDelay = new Tone.FeedbackDelay({ delayTime: "4n.", feedback: 0.25, wet: 0.15 }).connect(panReverb);
+        const panReverb = new Tone.Reverb({ roomSize: 0.85, wet: 0.3, decay: 2 }).connect(limiter3);
+        const panDelay = new Tone.FeedbackDelay({ delayTime: "4n.", feedback: 0.2, wet: 0.15 }).connect(panReverb);
 
-        // ROUTING: Synth -> Bass EQ -> Delay -> Reverb
+        // ROUTING: Synth -> Bass EQ -> Delay -> Reverb -> Limiter
         handpanSynth.disconnect();
         handpanSynth.connect(handpanBassEQ);
         handpanBassEQ.connect(panDelay);
@@ -2064,7 +2064,19 @@
 
                         // 4. Calculate smart velocity with a baseline volume floor of 0.15
                         const baseVelocity = 0.15; 
-                        const finalVelocity = clamp(baseVelocity * bassBoost * currentVolume, 0.2, 5);
+                        // Detect any octave 3 note (D3, F3, G3, Bb3, A3)
+                        const isOctave3 = note.includes("3"); 
+
+                        // Set high multipliers and minimum floors for octave 3
+                        const octaveMultiplier = isOctave3 ? 2.5 : 0.9;
+                        const minVelocity      = isOctave3 ? 0.65 : 0.25; // Ensures low notes NEVER drop below 75% power
+                        const maxVelocity      = isOctave3 ? 1.0 : 0.65;  // High notes stay restrained
+
+                        const finalVelocity = clamp(
+                            baseVelocity * bassBoost * currentVolume * octaveMultiplier, 
+                            minVelocity,  // High minimum floor for octave 3 (0.75), low floor for octave 4 (0.25)
+                            maxVelocity   // Upper safety ceiling
+                        );
 
                         // Play the handpan note with the dynamic velocity calculation
                         handpanSynth.triggerAttackRelease(cleanNote, "4n", time, finalVelocity);
