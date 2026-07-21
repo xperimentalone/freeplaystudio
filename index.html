@@ -988,8 +988,7 @@
                             await navigator.share({
                                 files: [videoFile],
                                 title: 'My Photo-Symphony',
-                                text: sharedMessageText, 
-                                url: sharedUrl
+                                text: `${sharedMessageText}\n${sharedUrl}`
                             });
                             modal.remove();
                         } catch (error) {
