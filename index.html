@@ -110,7 +110,7 @@
 
                 <div class="mt-6">
                     <button id="enterStudioBtn" class="mt-4 w-full rounded-full bg-[#7FE7CC] hover:bg-[#9BFFE1] text-white text-sm sm:text-base px-6 py-3 shadow-lg transition-all transform hover:scale-[1.02] active:scale-95 cursor-pointer">
-                        🚀 Warp into the Cosmic Playground
+                        Dive Into the Studio
                     </button>
                     <p class="text-[10px] sm:text-xs leading-5 text-slate-500 text-justify">
                         Special credits to Gemini for assistance on coding and image creation, and Pixabay for the beautiful audio. <br>
@@ -357,7 +357,7 @@
     <div id="view-secret-pan" class="channel-view w-full hidden flex flex-col items-center justify-center">
         <div class="max-w-6xl w-full bg-slate-200/70 p-6 sm:p-8 rounded-2xl shadow-2xl border border-slate-300 text-center backdrop-blur-sm">
             <h1 class="text-3xl font-bold mb-1 text-[#5DDFB8]">Secret Pan Garden</h1>
-            <p class="text-xs text-slate-700 mb-6">Create your own unique melodies with this handpan!<br> (Suggested to use desktop computer for optimal performance.)</p>
+            <p class="text-xs text-slate-700 mb-6">Create your own unique melodies with this handpan!<br> (Use desktop computer for optimal performance.)</p>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 text-left items-center">
                 <div class="lg:col-span-5 flex flex-col items-center justify-center p-4 bg-white/5 rounded-xl border border-white/10 text-center self-stretch">
@@ -409,9 +409,14 @@
                                 <h3 class="text-teal-400 font-bold text-sm">🎵 16-Step Studio Sequencer Grid</h3>
                                 <p class="text-[11px] text-slate-400">Click a box to highlight it, then hit the Handpan to record notes. Double-click a box to clear it.</p>
                             </div>
-                            <button onclick="clearEntireGrid()" class="text-[10px] px-2 py-1 bg-rose-500/20 hover:bg-rose-500/40 text-slate-700 rounded border border-rose-500/30 cursor-pointer transition-colors">
-                                🧹 Clear All Grids
-                            </button>
+                            <div class="flex flex-col items-stretch gap-1">
+                                <button onclick="clearEntireGrid()" class="text-[10px] px-2 py-1 bg-rose-500/20 hover:bg-rose-500/40 text-slate-700 rounded border border-rose-500/30 cursor-pointer transition-colors">
+                                    🧹 Clear All Grids
+                                </button>
+                                <button id="cheatSheetBtn" type="button" class="text-[10px] px-2 py-1 bg-slate-500/20 hover:bg-slate-500/40 text-slate-700 rounded border border-slate-500/30 cursor-pointer transition-colors">
+                                    Cheat Sheet
+                                </button>
+                            </div>
                         </div>
                         
                         <div class="flex flex-col gap-4 bg-slate-300 p-4 rounded-xl border border-white/5">
@@ -430,6 +435,18 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div id="cheatSheetModal" class="fixed inset-0 z-[70] hidden items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="cheatSheetTitle">
+        <div class="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-slate-300 bg-slate-200 p-5 text-slate-700 shadow-2xl sm:p-6">
+            <div class="mb-5 flex items-start justify-between gap-4">
+                <div>
+                    <h2 id="cheatSheetTitle" class="text-xl font-bold text-teal-700">Chord Progression Cheat Sheet</h2>
+                </div>
+                <button id="closeCheatSheetBtn" type="button" class="rounded-lg px-2 py-1 text-lg text-slate-500 hover:bg-slate-300 hover:text-slate-800" aria-label="Close cheat sheet">&times;</button>
+            </div>
+            <div id="cheatSheetList" class="grid gap-3 sm:grid-cols-2"></div>
         </div>
     </div>
 
@@ -1755,6 +1772,105 @@
         const sequencerGridContainer = document.getElementById('sequencerGridContainer');
         const sequencerPageControls = document.getElementById('sequencerPageControls');
         const recordHandpanBtn = document.getElementById('recordHandpanBtn');
+        const cheatSheetBtn = document.getElementById('cheatSheetBtn');
+        const cheatSheetModal = document.getElementById('cheatSheetModal');
+        const cheatSheetList = document.getElementById('cheatSheetList');
+        const closeCheatSheetBtn = document.getElementById('closeCheatSheetBtn');
+
+        const chordProgressions = [
+            {
+                name: '4536',
+                description: 'Bb C A D',
+                variations: [
+                    { name: 'Variation 1', steps: ['Bb3', '-', 'ta', '-', 'C4', '-', 'ta', '-', 'A3', '-', 'ta', '-', 'D3', '-', 'ta', '-'] },
+                    { name: 'Variation 2', steps: ['Bb3', 'D4', 'F4', '-', 'C4', 'E4', 'G4', '-', 'A3', 'C4', 'E4', '-', 'D3', 'A3', 'D4', '-'] }
+                ]
+            },
+            {
+                name: '1645',
+                description: 'F D Bb C',
+                variations: [
+                    { name: 'Variation 1', steps: ['F3', '-', 'ta', '-', 'D3', '-', 'ta', '-', 'Bb3', '-', 'ta', '-', 'C4', '-', 'ta', '-'] },
+                    { name: 'Variation 2', steps: ['F3', 'A3', 'C4', '-', 'D3', 'A3', 'D4', '-', 'Bb3', 'D4', 'F4', '-', 'C4', 'E4', 'G4', '-'] }
+                ]
+            },
+            {
+                name: 'Canon',
+                description: 'F C D A Bb F Bb C',
+                variations: [
+                    { name: 'Variation 1', steps: ['F3', '-', 'ta', '-', 'C4', '-', 'ta', '-', 'D3', '-', 'ta', '-', 'A3', '-', 'ta', '-', 'Bb3', '-', 'ta', '-', 'F3', '-', 'ta', '-', 'Bb3', '-', 'ta', '-', 'C4', '-', 'ta', '-'] },
+                    { name: 'Variation 2', steps: ['F3', 'A3', 'C4', '-', 'C4', 'E4', 'G4', '-', 'D3', 'A3', 'D4', '-', 'A3', 'C4', 'E4', '-', 'Bb3', 'D4', 'F4', '-', 'F3', 'A3', 'C4', '-', 'Bb3', 'D4', 'F4', '-', 'C4', 'E4', 'G4', '-'] }
+                ]
+            },
+            {
+                name: '6251',
+                description: 'D Gm C F',
+                variations: [
+                    { name: 'Variation 1', steps: ['D3', '-', 'ta', '-', 'G3', '-', 'ta', '-', 'C4', '-', 'ta', '-', 'F3', '-', 'ta', '-'] },
+                    { name: 'Variation 2', steps: ['D3', 'A3', 'D4', '-', 'G3', 'Bb3', 'D4', '-', 'C4', 'E4', 'G4', '-', 'F3', 'A3', 'C4', '-'] }
+                ]
+            }
+        ];
+
+        function createProgressionPages(steps) {
+            const pages = [];
+            for (let offset = 0; offset < steps.length; offset += 16) {
+                pages.push({
+                    notes: {
+                        left: Array(16).fill('-'),
+                        right: steps.slice(offset, offset + 16)
+                    }
+                });
+            }
+            return pages;
+        }
+
+        function renderCheatSheet() {
+            cheatSheetList.innerHTML = chordProgressions.map((progression, progressionIndex) => `
+                <div class="rounded-xl border border-slate-300 bg-white/60 p-3">
+                    <h3 class="font-bold text-teal-700">${progressionIndex + 1}. ${progression.name}</h3>
+                    <p class="mb-3 text-[11px] text-slate-500">${progression.description} (${progression.variations[0].steps.length === 32 ? '32' : '16'} steps)</p>
+                    <div class="grid gap-2">
+                        ${progression.variations.map((variation, variationIndex) => `
+                            <div class="flex items-center justify-between gap-2 rounded-lg bg-slate-100 px-2.5 py-2">
+                                <span class="text-xs font-semibold text-slate-600">${variation.name}</span>
+                                <button type="button" data-progression-index="${progressionIndex}" data-variation-index="${variationIndex}" class="rounded-lg bg-teal-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-teal-700">Add</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+            cheatSheetList.querySelectorAll('[data-progression-index]').forEach((button) => {
+                button.addEventListener('click', () => {
+                    const progression = chordProgressions[Number(button.dataset.progressionIndex)];
+                    const variation = progression.variations[Number(button.dataset.variationIndex)];
+                    const newPages = createProgressionPages(variation.steps);
+                    sequencerPages.push(...newPages);
+                    currentPageIndex = sequencerPages.length - newPages.length;
+                    activeSelectedCellKey = null;
+                    renderSequencerPage();
+                    closeCheatSheet();
+                });
+            });
+        }
+
+        function openCheatSheet() {
+            renderCheatSheet();
+            cheatSheetModal.classList.remove('hidden');
+            cheatSheetModal.classList.add('flex');
+        }
+
+        function closeCheatSheet() {
+            cheatSheetModal.classList.add('hidden');
+            cheatSheetModal.classList.remove('flex');
+        }
+
+        cheatSheetBtn.addEventListener('click', openCheatSheet);
+        closeCheatSheetBtn.addEventListener('click', closeCheatSheet);
+        cheatSheetModal.addEventListener('click', (event) => {
+            if (event.target === cheatSheetModal) closeCheatSheet();
+        });
 
         // --- MODERN RECORDING LOGIC USING TONE.RECORDER ---
         let recorder = null;
@@ -1901,10 +2017,10 @@
                     
                     // Right track explicitly maps out your 16-step pattern
                     right: [
-                        'Bb3', 'ta', 'F4', 'ta', 
-                        'C4', 'ta', 'F4', 'ta', 
-                        'A3', 'ta', 'F4', 'ta', 
-                        'D3', 'ta', 'F4', 'ta'
+                        'Bb3', '-', 'ta', '-', 
+                        'C4', '-', 'ta', '-', 
+                        'A3', '-', 'ta', '-', 
+                        'D3', '-', 'ta', '-'
                     ]
                 }
             };
